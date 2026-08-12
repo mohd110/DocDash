@@ -1,0 +1,9 @@
+project_id = "hakiman"
+
+# The n8n-facing endpoints authenticate with the x-api-key header instead of a
+# Supabase JWT, so JWT verification is turned off for them.
+[functions.appointments]
+verify_jwt = false
+
+[functions.prescription-delivery-callback]
+verify_jwt = false

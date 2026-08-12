@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Cream paper */
+    --background: 42 81% 96%;
+    --foreground: 163 32% 12%;
+
+    --card: 40 100% 99%;
+    --card-foreground: 163 32% 12%;
+
+    /* Bottle green ink */
+    --primary: 163 77% 19%;
+    --primary-foreground: 42 81% 96%;
+
+    --secondary: 40 55% 91%;
+    --secondary-foreground: 163 45% 16%;
+
+    --muted: 40 45% 92%;
+    --muted-foreground: 163 12% 38%;
+
+    --accent: 163 30% 90%;
+    --accent-foreground: 163 60% 16%;
+
+    --destructive: 0 65% 44%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40 32% 84%;
+    --input: 40 32% 80%;
+    --ring: 163 77% 26%;
+
+    --radius: 0.9rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    /* Subtle paper texture so the cream reads warm rather than flat */
+    background-image: radial-gradient(hsl(40 40% 88% / 0.5) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  /* Large, obvious focus ring — this dashboard is keyboard/tablet friendly */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  .font-display {
+    font-family: 'Fraunces', Georgia, serif;
+  }
+}
+
+@layer utilities {
+  .scrollbar-slim::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-slim::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 999px;
+  }
+}
