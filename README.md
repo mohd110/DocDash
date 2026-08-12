@@ -130,6 +130,10 @@ build command and output directory, so nothing needs configuring by hand.
 
 ## API contract with n8n
 
+> **Building the n8n side?** [`docs/N8N-INTEGRATION.md`](./docs/N8N-INTEGRATION.md) is a
+> self-contained handoff for the agent developer — payloads, curl examples, error codes,
+> CORS requirements and a testing checklist. Send them that file; they don't need this one.
+
 ### Inbound — n8n calls the dashboard
 
 Base URL: `https://<project-ref>.functions.supabase.co`
