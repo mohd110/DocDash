@@ -208,7 +208,7 @@ export function SettingsPage() {
                 id="doctor_name"
                 value={form.doctor_name}
                 onChange={(e) => set({ doctor_name: e.target.value })}
-                placeholder="Dr. Salim Ahmed"
+                placeholder="Dr. Salim"
               />
             </Field>
             <Field label="Qualifications" htmlFor="qualifications">

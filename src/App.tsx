@@ -10,6 +10,7 @@ import { AppointmentsPage } from '@/pages/appointments'
 import { ConsultPage } from '@/pages/consult'
 import { PatientsPage } from '@/pages/patients'
 import { PatientProfilePage } from '@/pages/patient-profile'
+import { PrescriptionPage } from '@/pages/prescription'
 import { SettingsPage } from '@/pages/settings'
 import { SetupRequiredPage } from '@/pages/setup-required'
 
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="/" element={<DashboardPage />} />
         <Route path="/appointments" element={<AppointmentsPage />} />
         <Route path="/consult/:id" element={<ConsultPage />} />
+        <Route path="/prescription/:appointmentId" element={<PrescriptionPage />} />
         <Route path="/patients" element={<PatientsPage />} />
         <Route path="/patients/:id" element={<PatientProfilePage />} />
         <Route path="/settings" element={<SettingsPage />} />

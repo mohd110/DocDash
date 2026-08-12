@@ -64,6 +64,29 @@ export async function listAppointments(
   return (data ?? []).map(normalize)
 }
 
+/**
+ * Every appointment between two IST calendar days, inclusive — one query per
+ * month for the calendar view rather than one per visible day.
+ */
+export async function listAppointmentsBetween(
+  fromDay: string,
+  toDay: string,
+): Promise<AppointmentWithPatient[]> {
+  const { start } = istDayRange(fromDay)
+  const { end } = istDayRange(toDay)
+
+  const { data, error } = await supabase
+    .from('appointments')
+    .select(SELECT)
+    .gte('scheduled_at', start)
+    .lt('scheduled_at', end)
+    .order('scheduled_at')
+    .limit(1000)
+
+  if (error) throw error
+  return (data ?? []).map(normalize)
+}
+
 export async function getAppointment(id: string): Promise<AppointmentWithPatient> {
   const { data, error } = await supabase.from('appointments').select(SELECT).eq('id', id).single()
   if (error) throw error

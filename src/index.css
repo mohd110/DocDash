@@ -72,3 +72,35 @@
     border-radius: 999px;
   }
 }
+
+/* ---------------------------------------------------------------- printing --
+ * Anything marked .no-print disappears, the paper texture and cream background
+ * are dropped (they only waste ink), and the prescription gets A4 margins.
+ */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    background-image: none !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  /* Keep table rows and the signature block from splitting across pages. */
+  tr,
+  .break-inside-avoid {
+    break-inside: avoid;
+  }
+
+  /* The medicines table header repeats when a long prescription wraps. */
+  thead {
+    display: table-header-group;
+  }
+}

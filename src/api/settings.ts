@@ -4,7 +4,7 @@ import type { ClinicSettings } from '@/lib/types'
 const EMPTY: ClinicSettings = {
   id: 1,
   clinic_name: 'Hakiman Clinic',
-  doctor_name: null,
+  doctor_name: 'Dr. Salim',
   qualifications: null,
   registration_no: null,
   address: null,

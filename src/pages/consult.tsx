@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
@@ -9,17 +9,24 @@ import {
   CheckCircle2,
   CloudUpload,
   FileText,
+  History,
   Loader2,
+  Pill,
+  Printer,
   Send,
+  Stethoscope,
   Video,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { EmptyState } from '@/components/ui/empty-state'
 import { Input, Textarea } from '@/components/ui/input'
 import { Field } from '@/components/ui/label'
-import { Skeleton } from '@/components/ui/skeleton'
+import { ListSkeleton, Skeleton } from '@/components/ui/skeleton'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { PrescriptionList } from '@/components/prescription/prescription-list'
+import { VisitCard } from '@/components/prescription/visit-card'
 import { StatusBadge } from '@/components/appointments/status-badge'
 import { PatientSummary } from '@/components/consult/patient-summary'
-import { PastConsultations } from '@/components/consult/past-consultations'
 import { MedicineRows, emptyMedicine } from '@/components/consult/medicine-rows'
 import {
   getOrCreateConsultation,
@@ -291,6 +298,12 @@ export function ConsultPage() {
 
           {completed ? (
             <>
+              <Button variant="outline" size="lg" asChild>
+                <Link to={`/prescription/${appointment.id}`} target="_blank">
+                  <Printer />
+                  Print
+                </Link>
+              </Button>
               {consultation?.prescription_pdf_url ? (
                 <Button variant="outline" size="lg" asChild>
                   <a href={consultation.prescription_pdf_url} target="_blank" rel="noreferrer">
@@ -363,18 +376,37 @@ export function ConsultPage() {
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]">
         {/* ------------------------------------------------------ left panel */}
+        {/* Patient facts stay pinned here while the doctor moves between tabs —
+            allergies in particular must never be a click away. */}
         <div className="space-y-4">
           <PatientSummary patient={patient} reason={appointment.reason} />
-          <PastConsultations patient={patient} visits={history} isLoading={loadingHistory} />
         </div>
 
         {/* ----------------------------------------------------- right panel */}
-        <div className="space-y-5 rounded-2xl border border-cream-500/40 bg-card p-5 shadow-card sm:p-6">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="font-display text-xl font-semibold text-bottle-800">
-              Consultation notes
-            </h2>
-            {!completed && (
+        <div className="rounded-2xl border border-cream-500/40 bg-card p-5 shadow-card sm:p-6">
+          <Tabs defaultValue="prescription">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <TabsList>
+                <TabsTrigger value="prescription" className="px-4">
+                  <Stethoscope className="size-4" />
+                  Prescription
+                </TabsTrigger>
+                <TabsTrigger value="history" className="px-4">
+                  <History className="size-4" />
+                  History
+                  {history.length > 0 && (
+                    <span className="rounded-full bg-cream-200 px-1.5 text-xs font-bold text-bottle-700">
+                      {history.length}
+                    </span>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="past-prescriptions" className="px-4">
+                  <Pill className="size-4" />
+                  Past Rx
+                </TabsTrigger>
+              </TabsList>
+
+              {!completed && (
               <span className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
                 {save.isPending ? (
                   <>
@@ -397,11 +429,13 @@ export function ConsultPage() {
                     Autosave on
                   </>
                 )}
-              </span>
-            )}
-          </div>
+                </span>
+              )}
+            </div>
 
-          <fieldset disabled={completed} className="space-y-5">
+            {/* --------------------------------------------- write prescription */}
+            <TabsContent value="prescription" className="space-y-5">
+              <fieldset disabled={completed} className="space-y-5">
             <Field label="Findings / Diagnosis" htmlFor="diagnosis">
               <Textarea
                 id="diagnosis"
@@ -458,24 +492,61 @@ export function ConsultPage() {
                 )}
               </div>
             </Field>
-          </fieldset>
+              </fieldset>
 
-          {!completed && (
-            <div className="border-t border-cream-500/50 pt-5">
-              <Button
-                size="xl"
-                className="w-full"
-                loading={complete.isPending}
-                onClick={() => complete.mutate()}
-              >
-                <Send />
-                Complete &amp; Send to Patient
-              </Button>
-              <p className="mt-2.5 text-center text-xs text-muted-foreground">
-                Saves the consultation, creates the prescription PDF and sends it on WhatsApp.
-              </p>
-            </div>
-          )}
+              {completed ? (
+                <div className="border-t border-cream-500/50 pt-5">
+                  <Button variant="outline" size="lg" className="w-full" asChild>
+                    <Link to={`/prescription/${appointment.id}`} target="_blank">
+                      <Printer />
+                      Print this prescription
+                    </Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="border-t border-cream-500/50 pt-5">
+                  <Button
+                    size="xl"
+                    className="w-full"
+                    loading={complete.isPending}
+                    onClick={() => complete.mutate()}
+                  >
+                    <Send />
+                    Complete &amp; Send to Patient
+                  </Button>
+                  <p className="mt-2.5 text-center text-xs text-muted-foreground">
+                    Saves the consultation, creates the prescription PDF and sends it on WhatsApp.
+                  </p>
+                </div>
+              )}
+            </TabsContent>
+
+            {/* ------------------------------------------------ clinical history */}
+            <TabsContent value="history" className="space-y-4">
+              {loadingHistory ? (
+                <ListSkeleton rows={2} />
+              ) : history.length === 0 ? (
+                <EmptyState
+                  emoji="🌱"
+                  title="First visit"
+                  description={`This is the first recorded consultation for ${patient.full_name}. Everything you write today will show up here next time.`}
+                />
+              ) : (
+                history.map((visit) => (
+                  <VisitCard key={visit.id} visit={visit} patient={patient} compact />
+                ))
+              )}
+            </TabsContent>
+
+            {/* --------------------------------------------- previous prescriptions */}
+            <TabsContent value="past-prescriptions">
+              {loadingHistory ? (
+                <ListSkeleton rows={2} />
+              ) : (
+                <PrescriptionList visits={history} patient={patient} />
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>

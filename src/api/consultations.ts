@@ -132,6 +132,19 @@ export async function setDeliveryStatus(consultationId: string, status: Delivery
   if (error) throw error
 }
 
+/** Read-only lookup — unlike getOrCreateConsultation this never inserts a draft. */
+export async function getConsultationByAppointment(
+  appointmentId: string,
+): Promise<ConsultationWithItems | null> {
+  const { data, error } = await supabase
+    .from('consultations')
+    .select('*, prescription_items(*)')
+    .eq('appointment_id', appointmentId)
+    .maybeSingle()
+  if (error) throw error
+  return data ? sortItems(data) : null
+}
+
 export async function getConsultationById(id: string): Promise<ConsultationWithItems> {
   const { data, error } = await supabase
     .from('consultations')

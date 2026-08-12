@@ -1,14 +1,16 @@
 import * as React from 'react'
-import { CalendarDays, Search, X } from 'lucide-react'
+import { CalendarDays, CalendarRange, Search, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { ListSkeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AppointmentCard } from '@/components/appointments/appointment-card'
+import { AppointmentCalendar } from '@/components/appointments/appointment-calendar'
 import { useAppointments } from '@/hooks/useAppointments'
 import type { AppointmentScope } from '@/api/appointments'
 import { formatDate } from '@/lib/date'
+import { cn } from '@/lib/utils'
 import type { AppointmentWithPatient } from '@/lib/types'
 
 /** Name or phone, case-insensitive — the two things the doctor remembers. */
@@ -81,8 +83,11 @@ function ScopePanel({
   )
 }
 
+/** The three list scopes plus the month view. */
+type TabValue = AppointmentScope | 'calendar'
+
 export function AppointmentsPage() {
-  const [tab, setTab] = React.useState<AppointmentScope>('today')
+  const [tab, setTab] = React.useState<TabValue>('today')
   const [search, setSearch] = React.useState('')
   const [day, setDay] = React.useState('')
 
@@ -97,21 +102,26 @@ export function AppointmentsPage() {
         </p>
       </header>
 
-      <Tabs value={tab} onValueChange={(v) => setTab(v as AppointmentScope)}>
+      <Tabs value={tab} onValueChange={(v) => setTab(v as TabValue)}>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <TabsList className="w-full lg:w-auto">
-            <TabsTrigger value="today" className="flex-1 lg:flex-none">
+            <TabsTrigger value="today" className="flex-1 px-4 lg:flex-none">
               Today
             </TabsTrigger>
-            <TabsTrigger value="upcoming" className="flex-1 lg:flex-none">
+            <TabsTrigger value="upcoming" className="flex-1 px-4 lg:flex-none">
               Upcoming
             </TabsTrigger>
-            <TabsTrigger value="past" className="flex-1 lg:flex-none">
+            <TabsTrigger value="past" className="flex-1 px-4 lg:flex-none">
               Past
+            </TabsTrigger>
+            <TabsTrigger value="calendar" className="flex-1 px-4 lg:flex-none">
+              <CalendarRange className="size-4" />
+              Calendar
             </TabsTrigger>
           </TabsList>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
+          {/* Search and the date picker only apply to the list tabs. */}
+          <div className={cn('flex flex-col gap-3 sm:flex-row', tab === 'calendar' && 'hidden')}>
             <div className="relative">
               <Search className="pointer-events-none absolute left-3.5 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -152,6 +162,9 @@ export function AppointmentsPage() {
         </TabsContent>
         <TabsContent value="past">
           <ScopePanel scope="past" search={search} day={day || undefined} />
+        </TabsContent>
+        <TabsContent value="calendar">
+          <AppointmentCalendar />
         </TabsContent>
       </Tabs>
     </div>

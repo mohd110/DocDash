@@ -5,6 +5,7 @@ import {
   getAppointment,
   getTodayStats,
   listAppointments,
+  listAppointmentsBetween,
   rescheduleAppointment,
   updateAppointmentStatus,
   type AppointmentScope,
@@ -23,6 +24,14 @@ export function useAppointments(scope: AppointmentScope, day?: string) {
   return useQuery({
     queryKey: qk.appointments(scope, day),
     queryFn: () => listAppointments(scope, day),
+  })
+}
+
+/** All appointments across an IST date range — powers the calendar month view. */
+export function useAppointmentsBetween(fromDay: string, toDay: string) {
+  return useQuery({
+    queryKey: qk.appointmentsRange(fromDay, toDay),
+    queryFn: () => listAppointmentsBetween(fromDay, toDay),
   })
 }
 

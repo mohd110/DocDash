@@ -144,7 +144,7 @@ export function PrescriptionDocument({
 }: PrescriptionData) {
   const meds = consultation.prescription_items
   const clinicName = settings.clinic_name?.trim() || 'Hakiman Clinic'
-  const doctorName = settings.doctor_name?.trim() || 'Consulting Physician'
+  const doctorName = settings.doctor_name?.trim() || 'Dr. Salim'
 
   return (
     <Document

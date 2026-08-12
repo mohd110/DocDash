@@ -32,7 +32,7 @@ export function AppShell() {
   return (
     <div className="min-h-screen lg:flex">
       {/* ----------------------------------------------- desktop sidebar (§7.3) */}
-      <aside className="sticky top-0 hidden h-screen w-72 shrink-0 flex-col border-r border-cream-500/40 bg-cream-100/80 px-5 py-7 backdrop-blur lg:flex">
+      <aside className="no-print sticky top-0 hidden h-screen w-72 shrink-0 flex-col border-r border-cream-500/40 bg-cream-100/80 px-5 py-7 backdrop-blur lg:flex">
         <Wordmark />
 
         <nav className="mt-10 flex flex-1 flex-col gap-2">
@@ -75,7 +75,7 @@ export function AppShell() {
       {/* ------------------------------------------------------- main column */}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Mobile top bar */}
-        <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-cream-500/40 bg-cream-100/95 px-4 py-3 backdrop-blur lg:hidden">
+        <header className="no-print sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-cream-500/40 bg-cream-100/95 px-4 py-3 backdrop-blur lg:hidden">
           <Wordmark />
           <div className="flex items-center gap-2">
             <LiveDot />
@@ -86,7 +86,7 @@ export function AppShell() {
         </header>
 
         {/* Desktop status strip */}
-        <div className="hidden justify-end px-8 pt-6 lg:flex">
+        <div className="no-print hidden justify-end px-8 pt-6 lg:flex">
           <LiveDot />
         </div>
 
@@ -96,7 +96,7 @@ export function AppShell() {
       </div>
 
       {/* --------------------------------------------------- mobile bottom nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-cream-500/50 bg-cream-100/98 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
+      <nav className="no-print fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-cream-500/50 bg-cream-100/98 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
         {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}

@@ -1,6 +1,7 @@
 /** Single source of truth for cache keys, so invalidation is never a guess. */
 export const qk = {
   appointments: (scope: string, day?: string) => ['appointments', scope, day ?? null] as const,
+  appointmentsRange: (from: string, to: string) => ['appointments', 'range', from, to] as const,
   appointment: (id: string) => ['appointment', id] as const,
   todayStats: () => ['today-stats'] as const,
   patients: (search?: string) => ['patients', search ?? ''] as const,

@@ -93,7 +93,7 @@ create table if not exists public.clinic_settings (
 
 -- Singleton row so the Settings screen always has something to edit.
 insert into public.clinic_settings (id, clinic_name, doctor_name, working_hours)
-values (1, 'Hakiman Clinic', 'Dr. —', 'Mon–Sat, 10:00 AM – 6:00 PM')
+values (1, 'Hakiman Clinic', 'Dr. Salim', 'Mon–Sat, 10:00 AM – 6:00 PM')
 on conflict (id) do nothing;
 
 -- ============================================================================

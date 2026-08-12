@@ -85,3 +85,63 @@ export function isTodayIST(iso: string) {
 export function istNow() {
   return toZonedTime(new Date(), IST)
 }
+
+export interface CalendarCell {
+  /** `yyyy-MM-dd` */
+  iso: string
+  dayOfMonth: number
+  inMonth: boolean
+}
+
+function isoDate(year: number, monthIndex: number, day: number) {
+  const d = new Date(Date.UTC(year, monthIndex, day))
+  return d.toISOString().slice(0, 10)
+}
+
+/**
+ * Six weeks of calendar cells (Mon-first) covering the given month, padded with
+ * the neighbouring months' days. Built with UTC arithmetic on purpose: these are
+ * calendar dates, not instants, so timezone offsets must not shift them.
+ */
+export function monthMatrix(year: number, monthIndex: number): CalendarCell[] {
+  const firstWeekday = new Date(Date.UTC(year, monthIndex, 1)).getUTCDay() // 0 = Sunday
+  const leading = (firstWeekday + 6) % 7 // shift so Monday = 0
+  const daysInMonth = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate()
+
+  const cells: CalendarCell[] = []
+
+  for (let i = leading; i > 0; i--) {
+    const d = new Date(Date.UTC(year, monthIndex, 1 - i))
+    cells.push({
+      iso: d.toISOString().slice(0, 10),
+      dayOfMonth: d.getUTCDate(),
+      inMonth: false,
+    })
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    cells.push({ iso: isoDate(year, monthIndex, day), dayOfMonth: day, inMonth: true })
+  }
+
+  // Always 6 rows, so the grid does not jump height between months.
+  let next = 1
+  while (cells.length < 42) {
+    const d = new Date(Date.UTC(year, monthIndex + 1, next++))
+    cells.push({
+      iso: d.toISOString().slice(0, 10),
+      dayOfMonth: d.getUTCDate(),
+      inMonth: false,
+    })
+  }
+
+  return cells
+}
+
+/** Month label like "August 2026". */
+export function monthLabel(year: number, monthIndex: number) {
+  return new Date(Date.UTC(year, monthIndex, 1)).toLocaleDateString('en-GB', {
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  })
+}

@@ -26,7 +26,7 @@ export function buildTextSummary({
 }: PrescriptionData): string {
   const lines: string[] = []
   const clinicName = settings.clinic_name?.trim() || 'Hakiman Clinic'
-  const doctorName = settings.doctor_name?.trim() || 'Consulting Physician'
+  const doctorName = settings.doctor_name?.trim() || 'Dr. Salim'
 
   lines.push(`*${clinicName}*`)
   lines.push(doctorName + (settings.qualifications ? `, ${settings.qualifications}` : ''))

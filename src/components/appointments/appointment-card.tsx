@@ -1,6 +1,14 @@
 import * as React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { AlertTriangle, CalendarClock, ChevronRight, Phone, UserX, XCircle } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import {
+  AlertTriangle,
+  CalendarClock,
+  ChevronRight,
+  Phone,
+  Printer,
+  UserX,
+  XCircle,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { StatusBadge } from './status-badge'
@@ -99,6 +107,16 @@ export function AppointmentCard({
             {appointment.status === 'completed' ? 'View' : 'Open'}
             <ChevronRight />
           </Button>
+
+          {/* A finished visit can be reprinted straight from the list. */}
+          {appointment.status === 'completed' && appointment.consultation && (
+            <Button variant="outline" size="lg" asChild title="Print prescription">
+              <Link to={`/prescription/${appointment.id}`} target="_blank">
+                <Printer />
+                <span className="sr-only sm:not-sr-only">Print</span>
+              </Link>
+            </Button>
+          )}
 
           {open && (
             <>
