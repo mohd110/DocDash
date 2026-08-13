@@ -8,20 +8,11 @@ import { ListSkeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { PatientFormDialog } from '@/components/patients/patient-form-dialog'
 import { usePatients } from '@/hooks/usePatients'
+import { useDebounced } from '@/hooks/useDebounced'
 import { useStartPrescription } from '@/hooks/useAppointments'
 import { formatDate } from '@/lib/date'
 import { describePatient, initials } from '@/lib/utils'
 import type { Patient } from '@/lib/types'
-
-/** Debounced so each keystroke does not fire a query. */
-function useDebounced<T>(value: T, delay = 300) {
-  const [debounced, setDebounced] = React.useState(value)
-  React.useEffect(() => {
-    const timer = window.setTimeout(() => setDebounced(value), delay)
-    return () => window.clearTimeout(timer)
-  }, [value, delay])
-  return debounced
-}
 
 /**
  * The row body is a link to the profile; the prescription button sits beside it

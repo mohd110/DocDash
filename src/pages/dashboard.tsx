@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
@@ -12,6 +13,7 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { ListSkeleton, Skeleton } from '@/components/ui/skeleton'
 import { StatCard } from '@/components/dashboard/stat-card'
 import { AppointmentCard } from '@/components/appointments/appointment-card'
+import { NewAppointmentDialog } from '@/components/appointments/new-appointment-dialog'
 import { useTodayStats } from '@/hooks/useAppointments'
 import { useClinicSettings } from '@/hooks/useSettings'
 import { formatTime, istNow, relativeToNow } from '@/lib/date'
@@ -84,6 +86,7 @@ function NextUpHero({ appointment }: { appointment: AppointmentWithPatient }) {
 export function DashboardPage() {
   const { data, isLoading } = useTodayStats()
   const { data: settings } = useClinicSettings()
+  const [walkIn, setWalkIn] = React.useState(false)
 
   const appointments = data?.appointments ?? []
   const next = pickNext(appointments)
@@ -91,13 +94,21 @@ export function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-7">
-      <header>
-        <p className="text-sm font-semibold uppercase tracking-wider text-bottle-500">
-          {greeting()}
-        </p>
-        <h1 className="mt-1 font-display text-3xl font-semibold text-bottle-800 sm:text-4xl">
-          {doctorName || 'Your clinic'} — today at a glance
-        </h1>
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wider text-bottle-500">
+            {greeting()}
+          </p>
+          <h1 className="mt-1 font-display text-3xl font-semibold text-bottle-800 sm:text-4xl">
+            {doctorName || 'Your clinic'} — today at a glance
+          </h1>
+        </div>
+
+        {/* Walk-ins never come through WhatsApp — this is the way in for them. */}
+        <Button size="lg" className="shrink-0" onClick={() => setWalkIn(true)}>
+          <Stethoscope />
+          New / Walk-in
+        </Button>
       </header>
 
       {/* ------------------------------------------------------- count cards */}
@@ -146,9 +157,15 @@ export function DashboardPage() {
               : 'When the WhatsApp agent books someone, they will pop up here instantly — no refresh needed.'
           }
           action={
-            <Button variant="outline" size="lg" asChild>
-              <Link to="/appointments">See upcoming appointments</Link>
-            </Button>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button size="lg" onClick={() => setWalkIn(true)}>
+                <Stethoscope />
+                Start a walk-in
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <Link to="/appointments">See upcoming appointments</Link>
+              </Button>
+            </div>
           }
         />
       )}
@@ -171,7 +188,13 @@ export function DashboardPage() {
           <EmptyState
             emoji="🌿"
             title="Nothing on the calendar"
-            description="Your day is clear. Bookings from WhatsApp land here the moment they are made."
+            description="Your day is clear. Bookings from WhatsApp land here the moment they are made — or start a walk-in yourself."
+            action={
+              <Button size="lg" onClick={() => setWalkIn(true)}>
+                <Stethoscope />
+                Start a walk-in
+              </Button>
+            }
           />
         ) : (
           <div className="space-y-3">
@@ -185,6 +208,8 @@ export function DashboardPage() {
           </div>
         )}
       </section>
+
+      <NewAppointmentDialog open={walkIn} onOpenChange={setWalkIn} />
     </div>
   )
 }

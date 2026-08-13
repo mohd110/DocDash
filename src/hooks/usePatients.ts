@@ -11,10 +11,12 @@ import {
 import type { Patient } from '@/lib/types'
 import { qk } from './queryKeys'
 
-export function usePatients(search?: string) {
+/** `enabled: false` keeps the list from loading behind a closed dialog. */
+export function usePatients(search?: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: qk.patients(search),
     queryFn: () => listPatients(search),
+    enabled: options?.enabled ?? true,
   })
 }
 

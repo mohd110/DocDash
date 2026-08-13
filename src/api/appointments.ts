@@ -137,16 +137,22 @@ export async function findOpenAppointmentToday(
   return data?.[0] ? normalize(data[0]) : null
 }
 
-/** Walk-in booked at the desk rather than through the WhatsApp agent. */
+/**
+ * Walk-in booked at the desk rather than through the WhatsApp agent.
+ * `status` defaults to `booked`; a patient already sitting in the room is
+ * created straight as `in_progress` so the list never shows them as upcoming.
+ */
 export async function createAppointment(input: {
   patient_id: string
   scheduled_at: string
   reason?: string | null
   meeting_link?: string | null
+  status?: AppointmentStatus
 }) {
+  const { status = 'booked', ...rest } = input
   const { data, error } = await supabase
     .from('appointments')
-    .insert({ ...input, status: 'booked' })
+    .insert({ ...rest, status })
     .select(SELECT)
     .single()
   if (error) throw error

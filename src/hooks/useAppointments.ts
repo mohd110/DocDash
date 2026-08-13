@@ -163,6 +163,59 @@ export function useAppointmentActions() {
 }
 
 /**
+ * The patient is standing in front of the doctor right now: open a slot at this
+ * minute, mark it in progress and jump straight into the consult screen.
+ * An appointment they already have open today is reused rather than duplicated —
+ * a WhatsApp booking they simply turned up early for is the common case.
+ */
+export function useStartWalkIn() {
+  const navigate = useNavigate()
+  const invalidate = useInvalidateAppointments()
+
+  return useMutation({
+    mutationFn: async ({
+      patient,
+      reason,
+    }: {
+      patient: Pick<Patient, 'id' | 'full_name'>
+      reason?: string | null
+    }) => {
+      const existing = await findOpenAppointmentToday(patient.id)
+      if (existing) {
+        const started =
+          existing.status === 'in_progress'
+            ? existing
+            : await updateAppointmentStatus(existing.id, 'in_progress')
+        return { appointment: started, reused: true }
+      }
+
+      const created = await createAppointment({
+        patient_id: patient.id,
+        scheduled_at: new Date().toISOString(),
+        reason: reason?.trim() || 'Walk-in',
+        status: 'in_progress',
+      })
+      return { appointment: created, reused: false }
+    },
+    onSuccess: ({ appointment, reused }) => {
+      invalidate()
+      if (reused) {
+        toast.info('Opening today’s appointment', {
+          description: 'This patient already had one open — no duplicate created.',
+        })
+      } else {
+        toast.success('Walk-in started', {
+          description: `${appointment.patient?.full_name ?? 'The patient'} is now in progress.`,
+        })
+      }
+      navigate(`/consult/${appointment.id}`)
+    },
+    onError: (error: Error) =>
+      toast.error('Could not start the consultation', { description: error.message }),
+  })
+}
+
+/**
  * "Add Prescription" for a patient: reuse whatever appointment they already
  * have open today, otherwise open a walk-in slot now — then drop the doctor
  * straight into the consult screen to write it.

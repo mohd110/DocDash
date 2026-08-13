@@ -7,6 +7,7 @@ import { ListSkeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AppointmentCard } from '@/components/appointments/appointment-card'
 import { AppointmentCalendar } from '@/components/appointments/appointment-calendar'
+import { WalkInPanel } from '@/components/appointments/walk-in-panel'
 import { useAppointments } from '@/hooks/useAppointments'
 import type { AppointmentScope } from '@/api/appointments'
 import { formatDate } from '@/lib/date'
@@ -29,7 +30,8 @@ const EMPTY_COPY: Record<AppointmentScope, { emoji: string; title: string; descr
   today: {
     emoji: '🎉',
     title: 'No appointments today 🎉',
-    description: 'Enjoy the quiet. New WhatsApp bookings appear here instantly.',
+    description:
+      'Enjoy the quiet. New WhatsApp bookings appear here instantly, and walk-ins can be started from the panel above.',
   },
   upcoming: {
     emoji: '🗓️',
@@ -98,9 +100,11 @@ export function AppointmentsPage() {
           Appointments
         </h1>
         <p className="mt-1.5 text-sm text-muted-foreground">
-          Everything the WhatsApp agent has booked, in one list.
+          Everything the WhatsApp agent has booked, plus anyone added at the desk.
         </p>
       </header>
+
+      <WalkInPanel />
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as TabValue)}>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
