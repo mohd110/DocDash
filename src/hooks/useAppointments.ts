@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import {
   createAppointment,
+  findOpenAppointmentToday,
   getAppointment,
   getTodayStats,
   listAppointments,
@@ -17,7 +19,7 @@ import {
   type AppointmentUpdateEvent,
 } from '@/api/n8n'
 import { formatDateTime } from '@/lib/date'
-import type { AppointmentStatus, AppointmentWithPatient } from '@/lib/types'
+import type { AppointmentStatus, AppointmentWithPatient, Patient } from '@/lib/types'
 import { APPOINTMENT_SCOPED_KEYS, qk } from './queryKeys'
 
 export function useAppointments(scope: AppointmentScope, day?: string) {
@@ -158,6 +160,41 @@ export function useAppointmentActions() {
   })
 
   return { setStatus, reschedule, book }
+}
+
+/**
+ * "Add Prescription" for a patient: reuse whatever appointment they already
+ * have open today, otherwise open a walk-in slot now — then drop the doctor
+ * straight into the consult screen to write it.
+ */
+export function useStartPrescription() {
+  const navigate = useNavigate()
+  const invalidate = useInvalidateAppointments()
+
+  return useMutation({
+    mutationFn: async (patient: Pick<Patient, 'id' | 'full_name'>) => {
+      const existing = await findOpenAppointmentToday(patient.id)
+      if (existing) return { appointment: existing, reused: true }
+
+      const created = await createAppointment({
+        patient_id: patient.id,
+        scheduled_at: new Date().toISOString(),
+        reason: 'Prescription',
+      })
+      return { appointment: created, reused: false }
+    },
+    onSuccess: ({ appointment, reused }) => {
+      invalidate()
+      if (reused) {
+        toast.info('Opening today’s appointment', {
+          description: 'This patient already had one open — no duplicate created.',
+        })
+      }
+      navigate(`/consult/${appointment.id}`)
+    },
+    onError: (error: Error) =>
+      toast.error('Could not start a prescription', { description: error.message }),
+  })
 }
 
 /** Exposed so the consult screen can announce a follow-up date to the agent. */

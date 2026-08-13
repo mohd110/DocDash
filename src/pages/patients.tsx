@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronRight, MessageCircle, Search, UserPlus } from 'lucide-react'
+import { ChevronRight, FilePlus2, MessageCircle, Search, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
@@ -8,8 +8,10 @@ import { ListSkeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { PatientFormDialog } from '@/components/patients/patient-form-dialog'
 import { usePatients } from '@/hooks/usePatients'
+import { useStartPrescription } from '@/hooks/useAppointments'
 import { formatDate } from '@/lib/date'
 import { describePatient, initials } from '@/lib/utils'
+import type { Patient } from '@/lib/types'
 
 /** Debounced so each keystroke does not fire a query. */
 function useDebounced<T>(value: T, delay = 300) {
@@ -19,6 +21,64 @@ function useDebounced<T>(value: T, delay = 300) {
     return () => window.clearTimeout(timer)
   }, [value, delay])
   return debounced
+}
+
+/**
+ * The row body is a link to the profile; the prescription button sits beside it
+ * rather than inside it, since nesting a button in an anchor is invalid.
+ */
+function PatientRow({ patient }: { patient: Patient }) {
+  const startPrescription = useStartPrescription()
+
+  return (
+    <div className="flex items-center gap-3 rounded-2xl border border-cream-500/40 bg-card p-4 shadow-card transition-shadow hover:shadow-lift">
+      <Link to={`/patients/${patient.id}`} className="flex min-w-0 flex-1 items-center gap-4">
+        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-bottle-100 font-display font-semibold text-bottle-700">
+          {initials(patient.full_name)}
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="truncate font-display text-lg font-semibold text-bottle-800">
+              {patient.full_name}
+            </span>
+            {patient.source === 'whatsapp' && (
+              <Badge tone="green">
+                <MessageCircle className="size-3" />
+                WhatsApp
+              </Badge>
+            )}
+            {patient.allergies && <Badge tone="amber">Allergies</Badge>}
+          </div>
+          <p className="mt-0.5 truncate text-sm text-muted-foreground">
+            {patient.phone} · {describePatient(patient.age, patient.gender)}
+          </p>
+        </div>
+
+        <div className="hidden shrink-0 text-right lg:block">
+          <p className="text-[0.68rem] font-bold uppercase tracking-wider text-muted-foreground">
+            Added
+          </p>
+          <p className="text-sm font-semibold text-bottle-700">{formatDate(patient.created_at)}</p>
+        </div>
+      </Link>
+
+      <Button
+        size="md"
+        className="shrink-0"
+        loading={startPrescription.isPending}
+        onClick={() => startPrescription.mutate(patient)}
+        title={`Write a prescription for ${patient.full_name}`}
+      >
+        <FilePlus2 />
+        <span className="sr-only sm:not-sr-only">Add Prescription</span>
+      </Button>
+
+      <Link to={`/patients/${patient.id}`} aria-label={`Open ${patient.full_name}'s profile`}>
+        <ChevronRight className="size-5 shrink-0 text-bottle-500" />
+      </Link>
+    </div>
+  )
 }
 
 export function PatientsPage() {
@@ -78,44 +138,7 @@ export function PatientsPage() {
       ) : (
         <div className="space-y-2.5">
           {patients!.map((patient) => (
-            <Link
-              key={patient.id}
-              to={`/patients/${patient.id}`}
-              className="flex items-center gap-4 rounded-2xl border border-cream-500/40 bg-card p-4 shadow-card transition-shadow hover:shadow-lift"
-            >
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-bottle-100 font-display font-semibold text-bottle-700">
-                {initials(patient.full_name)}
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="truncate font-display text-lg font-semibold text-bottle-800">
-                    {patient.full_name}
-                  </span>
-                  {patient.source === 'whatsapp' && (
-                    <Badge tone="green">
-                      <MessageCircle className="size-3" />
-                      WhatsApp
-                    </Badge>
-                  )}
-                  {patient.allergies && <Badge tone="amber">Allergies</Badge>}
-                </div>
-                <p className="mt-0.5 truncate text-sm text-muted-foreground">
-                  {patient.phone} · {describePatient(patient.age, patient.gender)}
-                </p>
-              </div>
-
-              <div className="hidden shrink-0 text-right sm:block">
-                <p className="text-[0.68rem] font-bold uppercase tracking-wider text-muted-foreground">
-                  Added
-                </p>
-                <p className="text-sm font-semibold text-bottle-700">
-                  {formatDate(patient.created_at)}
-                </p>
-              </div>
-
-              <ChevronRight className="size-5 shrink-0 text-bottle-500" />
-            </Link>
+            <PatientRow key={patient.id} patient={patient} />
           ))}
         </div>
       )}

@@ -44,7 +44,6 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
     /* Subtle paper texture so the cream reads warm rather than flat */
     background-image: radial-gradient(hsl(40 40% 88% / 0.5) 1px, transparent 1px);
     background-size: 22px 22px;
@@ -57,8 +56,12 @@
 }
 
 @layer components {
+  /* Headings: same family, tightened and weighted so they read as structure
+     rather than decoration — the tone this dashboard needs. */
   .font-display {
-    font-family: 'Fraunces', Georgia, serif;
+    font-family: 'Montserrat', 'Segoe UI', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
 }
 

@@ -69,8 +69,10 @@ export default {
         sm: 'calc(var(--radius) - 8px)',
       },
       fontFamily: {
-        sans: ['Inter', 'Segoe UI', 'system-ui', 'sans-serif'],
-        display: ['"Fraunces"', 'Georgia', 'serif'],
+        /* Montserrat throughout — a geometric sans in the Gotham idiom.
+           Gotham itself is a licensed Hoefler face and cannot be webfonted. */
+        sans: ['Montserrat', 'Segoe UI', 'system-ui', 'sans-serif'],
+        display: ['Montserrat', 'Segoe UI', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         card: '0 1px 2px rgba(9, 63, 48, 0.05), 0 8px 24px -12px rgba(9, 63, 48, 0.18)',

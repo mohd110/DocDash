@@ -115,6 +115,28 @@ export async function rescheduleAppointment(id: string, scheduledAt: string) {
   return normalize(data)
 }
 
+/**
+ * An appointment for this patient that is still open today, if there is one.
+ * "Add Prescription" reuses it rather than stacking a second appointment on top
+ * of the one the patient is literally sitting in.
+ */
+export async function findOpenAppointmentToday(
+  patientId: string,
+): Promise<AppointmentWithPatient | null> {
+  const { data, error } = await supabase
+    .from('appointments')
+    .select(SELECT)
+    .eq('patient_id', patientId)
+    .in('status', ['booked', 'in_progress'])
+    .gte('scheduled_at', startOfTodayIST())
+    .lt('scheduled_at', endOfTodayIST())
+    .order('scheduled_at')
+    .limit(1)
+
+  if (error) throw error
+  return data?.[0] ? normalize(data[0]) : null
+}
+
 /** Walk-in booked at the desk rather than through the WhatsApp agent. */
 export async function createAppointment(input: {
   patient_id: string

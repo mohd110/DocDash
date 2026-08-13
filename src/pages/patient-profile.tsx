@@ -1,6 +1,14 @@
 import * as React from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Activity, AlertTriangle, ArrowLeft, CalendarPlus, Pencil, Phone } from 'lucide-react'
+import {
+  Activity,
+  AlertTriangle,
+  ArrowLeft,
+  CalendarPlus,
+  FilePlus2,
+  Pencil,
+  Phone,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ListSkeleton, Skeleton } from '@/components/ui/skeleton'
@@ -8,6 +16,7 @@ import { PatientFormDialog } from '@/components/patients/patient-form-dialog'
 import { BookAppointmentDialog } from '@/components/patients/book-appointment-dialog'
 import { VisitCard } from '@/components/prescription/visit-card'
 import { usePatient, usePatientHistory } from '@/hooks/usePatients'
+import { useStartPrescription } from '@/hooks/useAppointments'
 import { formatDate } from '@/lib/date'
 import { describePatient, initials } from '@/lib/utils'
 
@@ -44,6 +53,7 @@ export function PatientProfilePage() {
   const navigate = useNavigate()
   const { data: patient, isLoading } = usePatient(id)
   const { data: history = [], isLoading: loadingHistory } = usePatientHistory(id)
+  const startPrescription = useStartPrescription()
   const [editing, setEditing] = React.useState(false)
   const [booking, setBooking] = React.useState(false)
 
@@ -106,9 +116,18 @@ export function PatientProfilePage() {
               <Pencil />
               Edit
             </Button>
-            <Button size="lg" onClick={() => setBooking(true)}>
+            <Button variant="outline" size="lg" onClick={() => setBooking(true)}>
               <CalendarPlus />
               Book appointment
+            </Button>
+            {/* The main thing a doctor wants to do from a patient record. */}
+            <Button
+              size="lg"
+              loading={startPrescription.isPending}
+              onClick={() => startPrescription.mutate(patient)}
+            >
+              <FilePlus2 />
+              Add Prescription
             </Button>
           </div>
         </div>
