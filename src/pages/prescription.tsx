@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { PrintablePrescription } from '@/components/prescription/printable-prescription'
 import { getConsultationByAppointment } from '@/api/consultations'
 import { useAppointment } from '@/hooks/useAppointments'
-import { useClinicSettings } from '@/hooks/useSettings'
+import { useDoctorProfile } from '@/hooks/useDoctor'
 import { useOpenPrescription, useResendPrescription } from '@/hooks/usePrescriptionDelivery'
 import { qk } from '@/hooks/queryKeys'
 
@@ -21,7 +21,7 @@ export function PrescriptionPage() {
   const navigate = useNavigate()
 
   const { data: appointment, isLoading: loadingAppointment } = useAppointment(appointmentId)
-  const { data: settings } = useClinicSettings()
+  const { data: doctor } = useDoctorProfile()
   const resend = useResendPrescription()
   const preview = useOpenPrescription()
 
@@ -31,7 +31,7 @@ export function PrescriptionPage() {
     enabled: Boolean(appointmentId),
   })
 
-  if (loadingAppointment || loadingConsultation || !settings) {
+  if (loadingAppointment || loadingConsultation || !doctor) {
     return (
       <div className="mx-auto max-w-4xl space-y-4">
         <Skeleton className="h-12 w-48" />
@@ -61,7 +61,7 @@ export function PrescriptionPage() {
     )
   }
 
-  const data = { patient, appointment, consultation, settings }
+  const data = { patient, appointment, consultation, doctor }
 
   return (
     <div className="mx-auto max-w-5xl space-y-5">

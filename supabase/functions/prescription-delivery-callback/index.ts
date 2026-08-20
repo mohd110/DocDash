@@ -1,7 +1,7 @@
 // POST /prescription-delivery-callback
 // n8n reports whether the WhatsApp send succeeded (PRD §6).
 // Body: { appointment_id: string, status: "sent" | "failed" }
-import { corsHeaders, json, requireApiKey, serviceClient } from '../_shared/utils.ts'
+import { corsHeaders, json, resolveTenant, serviceClient } from '../_shared/utils.ts'
 
 Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
@@ -9,8 +9,9 @@ Deno.serve(async (request) => {
 
   const client = serviceClient()
 
-  const unauthorized = await requireApiKey(request, client)
-  if (unauthorized) return unauthorized
+  const resolved = await resolveTenant(request, client)
+  if ('error' in resolved) return resolved.error
+  const { doctor_id: doctorId } = resolved.tenant
 
   let payload: { appointment_id?: string; status?: string }
   try {
@@ -30,6 +31,8 @@ Deno.serve(async (request) => {
     .from('consultations')
     .update({ whatsapp_delivery_status: status })
     .eq('appointment_id', appointmentId)
+    // A key only reports delivery for its own practice's consultations.
+    .eq('doctor_id', doctorId)
     .select('id, whatsapp_delivery_status')
     .maybeSingle()
 

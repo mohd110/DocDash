@@ -52,7 +52,7 @@ function Segmented<T extends string>({
   options: { value: T; label: string; icon?: React.ComponentType<{ className?: string }> }[]
 }) {
   return (
-    <div className="inline-flex w-full gap-1 rounded-xl border border-cream-500/40 bg-cream-200/70 p-1.5">
+    <div className="inline-flex w-full gap-1 rounded-xl border border-surface-500/40 bg-surface-200/70 p-1.5">
       {options.map((option) => {
         const Icon = option.icon
         const active = option.value === value
@@ -65,8 +65,8 @@ function Segmented<T extends string>({
             className={cn(
               'inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg px-3 text-[0.9rem] font-semibold transition-all',
               active
-                ? 'bg-bottle-600 text-cream-100 shadow-card'
-                : 'text-bottle-700/70 hover:text-bottle-800',
+                ? 'bg-brand-600 text-surface-100 shadow-card'
+                : 'text-brand-700/70 hover:text-brand-800',
             )}
           >
             {Icon && <Icon className="size-4" />}
@@ -94,12 +94,12 @@ function PatientPicker({
 
   if (selected) {
     return (
-      <div className="flex items-center gap-3 rounded-xl border-2 border-bottle-600/25 bg-bottle-50 p-3">
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-bottle-100 font-display font-semibold text-bottle-700">
+      <div className="flex items-center gap-3 rounded-xl border-2 border-brand-600/25 bg-brand-50 p-3">
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand-100 font-display font-semibold text-brand-700">
           {initials(selected.full_name)}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate font-display text-base font-semibold text-bottle-800">
+          <p className="truncate font-display text-base font-semibold text-brand-800">
             {selected.full_name}
           </p>
           <p className="truncate text-sm text-muted-foreground">
@@ -151,14 +151,14 @@ function PatientPicker({
               key={patient.id}
               type="button"
               onClick={() => onSelect(patient)}
-              className="flex w-full items-center gap-3 rounded-xl border border-cream-500/40 bg-card p-3 text-left transition-colors hover:border-bottle-600/40 hover:bg-bottle-50"
+              className="flex w-full items-center gap-3 rounded-xl border border-surface-500/40 bg-card p-3 text-left transition-colors hover:border-brand-600/40 hover:bg-brand-50"
             >
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-bottle-100 font-display text-sm font-semibold text-bottle-700">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-100 font-display text-sm font-semibold text-brand-700">
                 {initials(patient.full_name)}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="truncate font-semibold text-bottle-800">
+                  <span className="truncate font-semibold text-brand-800">
                     {patient.full_name}
                   </span>
                   {patient.source === 'whatsapp' && (
@@ -308,7 +308,7 @@ export function NewAppointmentDialog({
               {source === 'existing' ? (
                 <PatientPicker open={open} selected={selected} onSelect={setSelected} />
               ) : (
-                <div className="space-y-4 rounded-xl border border-cream-500/40 bg-cream-100/60 p-4">
+                <div className="space-y-4 rounded-xl border border-surface-500/40 bg-surface-100/60 p-4">
                   <Field label="Full name" htmlFor="na-name">
                     <Input
                       id="na-name"

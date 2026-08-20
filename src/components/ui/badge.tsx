@@ -10,10 +10,10 @@ const badgeVariants = cva(
         /* PRD §7.5 — status is always readable by colour alone */
         blue: 'border-blue-200 bg-blue-50 text-blue-700',
         amber: 'border-amber-200 bg-amber-50 text-amber-800',
-        green: 'border-bottle-200 bg-bottle-50 text-bottle-700',
+        green: 'border-brand-200 bg-brand-50 text-brand-700',
         gray: 'border-stone-200 bg-stone-100 text-stone-600',
         red: 'border-red-200 bg-red-50 text-red-700',
-        cream: 'border-cream-500/50 bg-cream-200 text-bottle-700',
+        cream: 'border-surface-500/50 bg-surface-200 text-brand-700',
       },
     },
     defaultVariants: { tone: 'cream' },

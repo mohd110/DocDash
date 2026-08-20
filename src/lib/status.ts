@@ -22,8 +22,8 @@ export const STATUS_META: Record<
   completed: {
     label: 'Completed',
     tone: 'green',
-    dot: 'bg-bottle-500',
-    accent: 'border-l-bottle-500',
+    dot: 'bg-brand-500',
+    accent: 'border-l-brand-500',
   },
   cancelled: {
     label: 'Cancelled',

@@ -11,6 +11,7 @@ export type DeliveryStatus = 'pending' | 'sent' | 'failed'
 
 export interface Patient {
   id: string
+  doctor_id: string
   full_name: string
   phone: string
   age: number | null
@@ -23,6 +24,7 @@ export interface Patient {
 
 export interface Appointment {
   id: string
+  doctor_id: string
   patient_id: string
   scheduled_at: string
   reason: string | null
@@ -47,6 +49,7 @@ export interface AppointmentWithPatient extends Appointment {
 
 export interface Consultation {
   id: string
+  doctor_id: string
   appointment_id: string
   patient_id: string
   diagnosis: string | null
@@ -61,6 +64,7 @@ export interface Consultation {
 
 export interface PrescriptionItem {
   id: string
+  doctor_id: string
   consultation_id: string
   medicine_name: string
   dosage: string | null
@@ -80,19 +84,45 @@ export interface MedicineDraft {
   instructions: string
 }
 
-export interface ClinicSettings {
-  id: number
-  clinic_name: string | null
-  doctor_name: string | null
+/**
+ * A tenant. One row per doctor, keyed by their auth user id — it holds both the
+ * professional identity asked for at sign-up and the clinic/integration config
+ * that used to live in the single-tenant `clinic_settings` row.
+ */
+export interface DoctorProfile {
+  id: string
+  email: string | null
+  full_name: string
   qualifications: string | null
+  specialization: string | null
   registration_no: string | null
+  years_experience: number | null
+  phone: string | null
+  clinic_name: string | null
   address: string | null
   logo_url: string | null
   signature_url: string | null
   default_meeting_link: string | null
   working_hours: string | null
+  /** #RRGGBB. Null falls back to the default palette — see src/lib/theme.ts. */
+  theme_primary: string | null
+  theme_background: string | null
   n8n_webhook_url: string | null
   n8n_api_key: string | null
+  created_at: string
+}
+
+/** The professional questions answered on the sign-up form. */
+export interface DoctorSignupDetails {
+  full_name: string
+  qualifications: string
+  specialization: string
+  registration_no: string
+  years_experience: string
+  phone: string
+  clinic_name: string
+  address: string
+  working_hours: string
 }
 
 export interface ConsultationWithItems extends Consultation {

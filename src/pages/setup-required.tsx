@@ -12,14 +12,14 @@ export function SetupRequiredPage() {
 
         <Card>
           <CardContent className="space-y-4 pt-6 sm:pt-8">
-            <h1 className="font-display text-2xl font-semibold text-bottle-800">
+            <h1 className="font-display text-2xl font-semibold text-brand-800">
               Almost there — connect Supabase
             </h1>
             <p className="text-sm leading-relaxed text-muted-foreground">
               Create a <code className="font-mono">.env</code> file in the project root (copy{' '}
               <code className="font-mono">.env.example</code>) and add your project credentials:
             </p>
-            <pre className="overflow-x-auto rounded-xl bg-bottle-800 p-4 font-mono text-xs leading-relaxed text-cream-100">
+            <pre className="overflow-x-auto rounded-xl bg-brand-800 p-4 font-mono text-xs leading-relaxed text-surface-100">
               {`VITE_SUPABASE_URL=https://xxxx.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGci...`}
             </pre>
@@ -27,10 +27,10 @@ VITE_SUPABASE_ANON_KEY=eyJhbGci...`}
               <li>
                 Run <code className="font-mono">supabase/schema.sql</code> in the Supabase SQL editor.
               </li>
-              <li>Create the doctor's account under Authentication → Users.</li>
               <li>
                 Restart the dev server (<code className="font-mono">npm run dev</code>).
               </li>
+              <li>Create your doctor account on the sign-up screen.</li>
             </ol>
           </CardContent>
         </Card>

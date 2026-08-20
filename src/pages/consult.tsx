@@ -36,7 +36,7 @@ import {
 } from '@/api/consultations'
 import { useAppointment, useAppointmentActions, notifyFollowUp } from '@/hooks/useAppointments'
 import { useKnownMedicines, usePatientHistory } from '@/hooks/usePatients'
-import { useClinicSettings } from '@/hooks/useSettings'
+import { useDoctorProfile } from '@/hooks/useDoctor'
 import {
   deliverPrescription,
   useOpenPrescription,
@@ -91,7 +91,7 @@ export function ConsultPage() {
   const client = useQueryClient()
 
   const { data: appointment, isLoading: loadingAppointment } = useAppointment(id)
-  const { data: settings } = useClinicSettings()
+  const { data: doctor } = useDoctorProfile()
   const { data: medicines = [] } = useKnownMedicines()
   const { setStatus } = useAppointmentActions()
   const resend = useResendPrescription()
@@ -162,7 +162,7 @@ export function ConsultPage() {
     return () => window.removeEventListener('beforeunload', onBeforeUnload)
   }, [dirty])
 
-  const meetingLink = appointment?.meeting_link || settings?.default_meeting_link || ''
+  const meetingLink = appointment?.meeting_link || doctor?.default_meeting_link || ''
 
   function startMeeting() {
     if (!appointment) return
@@ -249,7 +249,7 @@ export function ConsultPage() {
   if (!appointment || !patient) {
     return (
       <div className="mx-auto max-w-lg py-16 text-center">
-        <h1 className="font-display text-2xl font-semibold text-bottle-800">
+        <h1 className="font-display text-2xl font-semibold text-brand-800">
           Appointment not found
         </h1>
         <Button className="mt-6" onClick={() => navigate('/appointments')}>
@@ -272,14 +272,14 @@ export function ConsultPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-5">
       {/* ------------------------------------------------------------ top bar */}
-      <div className="flex flex-col gap-4 rounded-2xl border border-cream-500/40 bg-card p-4 shadow-card sm:p-5 xl:flex-row xl:items-center xl:justify-between">
+      <div className="flex flex-col gap-4 rounded-2xl border border-surface-500/40 bg-card p-4 shadow-card sm:p-5 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex min-w-0 items-center gap-3">
           <Button variant="ghost" size="icon" onClick={goBack} aria-label="Go back">
             <ArrowLeft />
           </Button>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="truncate font-display text-2xl font-semibold text-bottle-800">
+              <h1 className="truncate font-display text-2xl font-semibold text-brand-800">
                 {patient.full_name}
               </h1>
               <StatusBadge status={appointment.status} />
@@ -312,7 +312,7 @@ export function ConsultPage() {
                   </a>
                 </Button>
               ) : (
-                settings && (
+                doctor && (
                   <Button
                     variant="outline"
                     size="lg"
@@ -322,7 +322,7 @@ export function ConsultPage() {
                         patient,
                         appointment,
                         consultation: consultation!,
-                        settings,
+                        doctor,
                       })
                     }
                   >
@@ -364,9 +364,9 @@ export function ConsultPage() {
       </div>
 
       {completed && (
-        <div className="flex items-center gap-3 rounded-2xl border border-bottle-200 bg-bottle-50 px-5 py-4">
-          <CheckCircle2 className="size-5 shrink-0 text-bottle-600" />
-          <p className="text-sm font-semibold text-bottle-800">
+        <div className="flex items-center gap-3 rounded-2xl border border-brand-200 bg-brand-50 px-5 py-4">
+          <CheckCircle2 className="size-5 shrink-0 text-brand-600" />
+          <p className="text-sm font-semibold text-brand-800">
             This consultation is complete
             {consultation?.completed_at ? ` — closed ${formatDateTime(consultation.completed_at)}` : ''}
             . The record below is read-only.
@@ -383,7 +383,7 @@ export function ConsultPage() {
         </div>
 
         {/* ----------------------------------------------------- right panel */}
-        <div className="rounded-2xl border border-cream-500/40 bg-card p-5 shadow-card sm:p-6">
+        <div className="rounded-2xl border border-surface-500/40 bg-card p-5 shadow-card sm:p-6">
           <Tabs defaultValue="prescription">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <TabsList>
@@ -395,7 +395,7 @@ export function ConsultPage() {
                   <History className="size-4" />
                   History
                   {history.length > 0 && (
-                    <span className="rounded-full bg-cream-200 px-1.5 text-xs font-bold text-bottle-700">
+                    <span className="rounded-full bg-surface-200 px-1.5 text-xs font-bold text-brand-700">
                       {history.length}
                     </span>
                   )}
@@ -420,12 +420,12 @@ export function ConsultPage() {
                   </>
                 ) : savedAt ? (
                   <>
-                    <Check className="size-3.5 text-bottle-500" />
+                    <Check className="size-3.5 text-brand-500" />
                     Draft saved
                   </>
                 ) : (
                   <>
-                    <span className="size-2 rounded-full bg-bottle-300" />
+                    <span className="size-2 rounded-full bg-brand-300" />
                     Autosave on
                   </>
                 )}
@@ -447,7 +447,7 @@ export function ConsultPage() {
             </Field>
 
             <div className="space-y-2">
-              <p className="text-sm font-semibold uppercase tracking-wide text-bottle-700/80">
+              <p className="text-sm font-semibold uppercase tracking-wide text-brand-700/80">
                 Medicines
               </p>
               <MedicineRows
@@ -472,7 +472,7 @@ export function ConsultPage() {
               hint="If set, the WhatsApp agent will remind the patient."
             >
               <div className="flex items-center gap-2">
-                <CalendarPlus className="size-5 shrink-0 text-bottle-500" />
+                <CalendarPlus className="size-5 shrink-0 text-brand-500" />
                 <Input
                   id="follow-up"
                   type="date"
@@ -495,7 +495,7 @@ export function ConsultPage() {
               </fieldset>
 
               {completed ? (
-                <div className="border-t border-cream-500/50 pt-5">
+                <div className="border-t border-surface-500/50 pt-5">
                   <Button variant="outline" size="lg" className="w-full" asChild>
                     <Link to={`/prescription/${appointment.id}`} target="_blank">
                       <Printer />
@@ -504,7 +504,7 @@ export function ConsultPage() {
                   </Button>
                 </div>
               ) : (
-                <div className="border-t border-cream-500/50 pt-5">
+                <div className="border-t border-surface-500/50 pt-5">
                   <Button
                     size="xl"
                     className="w-full"

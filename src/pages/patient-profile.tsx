@@ -36,7 +36,7 @@ function InfoTile({
       className={`rounded-xl border px-4 py-3 ${
         tone === 'warn'
           ? 'border-amber-300 bg-amber-50 text-amber-900'
-          : 'border-cream-500/50 bg-cream-100/70 text-bottle-800'
+          : 'border-surface-500/50 bg-surface-100/70 text-brand-800'
       }`}
     >
       <p className="flex items-center gap-1.5 text-[0.68rem] font-bold uppercase tracking-wider opacity-75">
@@ -69,7 +69,7 @@ export function PatientProfilePage() {
   if (!patient) {
     return (
       <div className="mx-auto max-w-lg py-16 text-center">
-        <h1 className="font-display text-2xl font-semibold text-bottle-800">Patient not found</h1>
+        <h1 className="font-display text-2xl font-semibold text-brand-800">Patient not found</h1>
         <Button className="mt-6" onClick={() => navigate('/patients')}>
           Back to patients
         </Button>
@@ -87,14 +87,14 @@ export function PatientProfilePage() {
       </Button>
 
       {/* ------------------------------------------------------------ header */}
-      <div className="rounded-2xl border border-cream-500/40 bg-card p-5 shadow-card sm:p-6">
+      <div className="rounded-2xl border border-surface-500/40 bg-card p-5 shadow-card sm:p-6">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex min-w-0 items-center gap-4">
-            <div className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-bottle-100 font-display text-xl font-semibold text-bottle-700">
+            <div className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-brand-100 font-display text-xl font-semibold text-brand-700">
               {initials(patient.full_name)}
             </div>
             <div className="min-w-0">
-              <h1 className="truncate font-display text-3xl font-semibold text-bottle-800">
+              <h1 className="truncate font-display text-3xl font-semibold text-brand-800">
                 {patient.full_name}
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -103,7 +103,7 @@ export function PatientProfilePage() {
               </p>
               <a
                 href={`tel:${patient.phone}`}
-                className="mt-1.5 inline-flex items-center gap-1.5 text-sm font-semibold text-bottle-600 hover:underline"
+                className="mt-1.5 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:underline"
               >
                 <Phone className="size-4" />
                 {patient.phone}
@@ -149,7 +149,7 @@ export function PatientProfilePage() {
 
       {/* ----------------------------------------------------- visit history */}
       <section className="space-y-4">
-        <h2 className="font-display text-2xl font-semibold text-bottle-800">
+        <h2 className="font-display text-2xl font-semibold text-brand-800">
           Visit history
           {!loadingHistory && history.length > 0 && (
             <span className="ml-2 text-lg font-normal text-muted-foreground">

@@ -2,7 +2,7 @@ import * as React from 'react'
 import { cn } from '@/lib/utils'
 
 export const inputBaseClass =
-  'flex h-12 w-full rounded-lg border-2 border-cream-500/50 bg-card px-4 py-2 text-[0.95rem] text-foreground shadow-sm transition-colors placeholder:text-muted-foreground/70 focus-visible:border-bottle-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bottle-300/60 disabled:cursor-not-allowed disabled:opacity-60'
+  'flex h-12 w-full rounded-lg border-2 border-surface-500/50 bg-card px-4 py-2 text-[0.95rem] text-foreground shadow-sm transition-colors placeholder:text-muted-foreground/70 focus-visible:border-brand-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300/60 disabled:cursor-not-allowed disabled:opacity-60'
 
 const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
   ({ className, type = 'text', ...props }, ref) => (

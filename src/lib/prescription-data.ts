@@ -1,5 +1,5 @@
 import { formatDate } from './date'
-import type { Appointment, ClinicSettings, ConsultationWithItems, Patient } from './types'
+import type { Appointment, DoctorProfile, ConsultationWithItems, Patient } from './types'
 
 /**
  * Everything a prescription needs, in one bundle. Deliberately kept in a
@@ -9,7 +9,7 @@ export interface PrescriptionData {
   patient: Patient
   appointment: Pick<Appointment, 'id' | 'scheduled_at' | 'reason'>
   consultation: ConsultationWithItems
-  settings: ClinicSettings
+  doctor: DoctorProfile
 }
 
 /** A follow-up column is a bare date; read it as IST, never as browser-local. */
@@ -22,15 +22,15 @@ export function buildTextSummary({
   patient,
   appointment,
   consultation,
-  settings,
+  doctor,
 }: PrescriptionData): string {
   const lines: string[] = []
-  const clinicName = settings.clinic_name?.trim() || 'Hakiman Clinic'
-  const doctorName = settings.doctor_name?.trim() || 'Dr. Salim'
+  const clinicName = doctor.clinic_name?.trim() || doctor.full_name?.trim() || 'Clinic'
+  const doctorName = doctor.full_name?.trim() || 'Doctor'
 
   lines.push(`*${clinicName}*`)
-  lines.push(doctorName + (settings.qualifications ? `, ${settings.qualifications}` : ''))
-  if (settings.registration_no) lines.push(`Reg. No. ${settings.registration_no}`)
+  lines.push(doctorName + (doctor.qualifications ? `, ${doctor.qualifications}` : ''))
+  if (doctor.registration_no) lines.push(`Reg. No. ${doctor.registration_no}`)
   lines.push('')
   lines.push(`*Prescription for ${patient.full_name}*`)
   lines.push(`Date: ${formatDate(appointment.scheduled_at)}`)

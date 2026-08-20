@@ -65,10 +65,10 @@ export function MedicineRows({
       {value.map((row, index) => (
         <div
           key={row.key}
-          className="rounded-xl border border-cream-500/50 bg-cream-100/60 p-3 sm:p-4"
+          className="rounded-xl border border-surface-500/50 bg-surface-100/60 p-3 sm:p-4"
         >
           <div className="mb-3 flex items-center justify-between">
-            <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-bottle-600">
+            <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-600">
               <GripVertical className="size-4 opacity-40" />
               Medicine {index + 1}
             </span>

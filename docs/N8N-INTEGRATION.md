@@ -1,4 +1,4 @@
-# Hakiman ⇄ n8n — Integration Handoff
+# DocDash ⇄ n8n — Integration Handoff
 
 **For:** whoever is building the WhatsApp booking agent in n8n
 **Repo:** https://github.com/mohd110/DocDash
@@ -16,7 +16,7 @@ You do **not** need to read the dashboard code. Everything you need is in this f
           ▼
    ┌──────────────┐   1. books appointment    ┌─────────────────────┐
    │              │ ────────────────────────► │                     │
-   │  n8n agent   │                           │  Hakiman dashboard  │
+   │  n8n agent   │                           │  DocDash dashboard  │
    │              │ ◄──────────────────────── │  (doctor's screen)  │
    └──────────────┘   2. sends prescription   └─────────────────────┘
           │              + appointment changes
@@ -38,19 +38,29 @@ So there are two jobs:
 
 ---
 
-## 2. Authentication
+## 2. Authentication and which doctor a request belongs to
 
-One shared secret, sent both directions as an HTTP header:
+The dashboard is **multi-tenant**: one deployment serves many doctors, and each one only ever
+sees their own patients. So the API key is not a single shared secret — **every doctor has their
+own**, and the key *is* how we know whose practice a message concerns.
 
 ```
-x-api-key: <shared secret>
+x-api-key: <that doctor's key>
 ```
 
-- **Inbound (you → us):** we reject with `401` if it's missing or wrong.
-- **Outbound (us → you):** we send the same header. Please verify it and reject anything else.
+- **Inbound (you → us):** we look the key up, and file the booking against the doctor who owns
+  it. An unknown key is `401`. A valid key can only read and change that doctor's own rows —
+  passing another practice's `appointment_id` returns `404`, not their data.
+- **Outbound (us → you):** we send that doctor's own key, plus `doctor_id`, `doctor_name` and
+  `clinic_name` in the body, so you can tell the practices apart and sign each WhatsApp message
+  correctly.
 
-The doctor sets this value on the dashboard's Settings screen. Ask them for it — or agree
-on a value and they'll paste it in. Use a long random string.
+The key is generated when the doctor signs up and shown on their Settings screen with a copy
+button. Ask each doctor you are onboarding for theirs; there is no value to agree on in advance.
+
+**If you serve more than one doctor from one n8n instance**, key your workflow's routing off
+`doctor_id` (stable, a UUID) rather than off the clinic name, and store one API key + phone
+number per doctor on your side.
 
 ---
 
@@ -61,7 +71,8 @@ on a value and they'll paste it in. Use a long random string.
 > The dashboard's Settings screen displays all three full URLs with copy buttons, so the
 > doctor can send you the exact values once the backend is deployed.
 
-All three are `POST`, all take/return JSON, all require the `x-api-key` header.
+All three are `POST`, all take/return JSON, all require the `x-api-key` header of the doctor
+the request is about. The base URL is the same for every doctor — the key does the routing.
 
 ---
 
@@ -129,7 +140,7 @@ overwrite details the doctor has corrected by hand.
 ```bash
 curl -X POST "https://<project-ref>.functions.supabase.co/appointments" \
   -H "Content-Type: application/json" \
-  -H "x-api-key: <shared secret>" \
+  -H "x-api-key: <the doctor API key from Settings>" \
   -d '{
     "booking_id": "n8n-123",
     "patient_name": "Ravi Kumar",
@@ -159,7 +170,7 @@ Empty body is fine. Use the `appointment_id` we returned at booking time.
 
 ```bash
 curl -X POST "https://<project-ref>.functions.supabase.co/appointments/8f3c…/cancel" \
-  -H "x-api-key: <shared secret>"
+  -H "x-api-key: <the doctor API key from Settings>"
 ```
 
 > This does **not** fire the `appointment-updated` webhook back at you — you already know,
@@ -196,8 +207,20 @@ the request, not whether WhatsApp delivered it.
 
 ## 4. Job B — webhooks you expose
 
-The doctor pastes a **base URL** into Settings (e.g. `https://your-n8n.app/webhook`) and we
-append the paths below. Both get the `x-api-key` header.
+Each doctor pastes their **base URL** into Settings (e.g. `https://your-n8n.app/webhook`) and we
+append the paths below. Both get that doctor's `x-api-key` header, and both bodies start with the
+three sender fields:
+
+```json
+{
+  "doctor_id": "9c1e…",
+  "doctor_name": "Dr. Asha Rao",
+  "clinic_name": "Sunrise Clinic"
+}
+```
+
+Two doctors may point at the same n8n base URL, so do not assume one workflow run means one
+practice — read `doctor_id`.
 
 ### 4.1 `POST {base}/send-prescription`
 
@@ -206,10 +229,13 @@ send the patient their prescription on WhatsApp.
 
 ```json
 {
+  "doctor_id": "9c1e…",
+  "doctor_name": "Dr. Asha Rao",
+  "clinic_name": "Sunrise Clinic",
   "patient_phone": "+919876543210",
   "patient_name": "Ravi Kumar",
-  "pdf_url": "https://<project-ref>.supabase.co/storage/v1/object/public/prescriptions/8f3c…/prescription-1754.pdf",
-  "text_summary": "*Hakiman Clinic*\nDr. Salim, MBBS\n\n*Prescription for Ravi Kumar*\nDate: 5 Aug 2026\n…",
+  "pdf_url": "https://<project-ref>.supabase.co/storage/v1/object/public/prescriptions/9c1e…/8f3c…/prescription-1754.pdf",
+  "text_summary": "*Sunrise Clinic*\nDr. Asha Rao, MBBS\n\n*Prescription for Ravi Kumar*\nDate: 5 Aug 2026\n…",
   "appointment_id": "8f3c…"
 }
 ```
@@ -219,6 +245,7 @@ send the patient their prescription on WhatsApp.
 | `pdf_url` | Publicly readable — send it as a WhatsApp document. Can be `null` if PDF generation failed; fall back to the text. |
 | `text_summary` | Ready to send as-is. Already formatted with WhatsApp markup (`*bold*`) and newlines. |
 | `appointment_id` | Pass this straight back to the delivery callback in §3.3. |
+| `doctor_id` | Which practice this is. Use it to pick the right WhatsApp sender / template. |
 
 **Respond `2xx` if you accepted it.** Any non-2xx and the dashboard marks the delivery
 failed and shows the Retry banner immediately.
@@ -322,6 +349,8 @@ Work through this once the backend is deployed and you have the base URL + secre
 - [ ] Same phone, new `booking_id` → same patient, appointment added to their history
 - [ ] Missing `phone` returns `400` naming the field
 - [ ] Wrong `x-api-key` returns `401`
+- [ ] With doctor A's key, `POST /appointments/{an appointment of doctor B}/cancel` returns `404`
+- [ ] A booking sent with doctor A's key appears on doctor A's dashboard and **not** on doctor B's
 - [ ] `POST /appointments/{id}/cancel` flips the card to *Cancelled*
 - [ ] Doctor completes a consultation → your `/send-prescription` webhook fires with a
       working `pdf_url` (open it — it should be a real PDF)
@@ -346,12 +375,11 @@ Work through this once the backend is deployed and you have the base URL + secre
 supabase link --project-ref <project-ref>
 supabase functions deploy appointments
 supabase functions deploy prescription-delivery-callback
-supabase secrets set N8N_API_KEY=<shared secret>
 ```
 
 Until then you can build the n8n workflow against the contract in this document — it will not
-change — but you cannot call the endpoints. Ask for the base URL and the shared secret when
-the backend goes up.
+change — but you cannot call the endpoints. Ask for the base URL when the backend goes up, and
+for one API key per doctor you are onboarding.
 
 Full setup steps are in the repo [`README.md`](../README.md).
 

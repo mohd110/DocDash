@@ -49,16 +49,16 @@ export function AppointmentCard({
   return (
     <div
       className={cn(
-        'group rounded-2xl border border-cream-500/40 border-l-4 bg-card shadow-card transition-shadow hover:shadow-lift',
+        'group rounded-2xl border border-surface-500/40 border-l-4 bg-card shadow-card transition-shadow hover:shadow-lift',
         meta.accent,
-        highlight && 'ring-2 ring-bottle-400 ring-offset-2 ring-offset-background',
+        highlight && 'ring-2 ring-brand-400 ring-offset-2 ring-offset-background',
         isFresh && 'animate-pop-in ring-2 ring-amber-300',
       )}
     >
       <div className="flex flex-col gap-4 p-4 sm:p-5 lg:flex-row lg:items-center">
         {/* ----------------------------------------------------------- time */}
         <div className="flex shrink-0 items-center gap-4 lg:w-36 lg:flex-col lg:items-start lg:gap-1">
-          <div className="font-display text-2xl font-semibold leading-none text-bottle-800">
+          <div className="font-display text-2xl font-semibold leading-none text-brand-800">
             {formatTime(appointment.scheduled_at)}
           </div>
           <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -72,14 +72,14 @@ export function AppointmentCard({
         <button
           type="button"
           onClick={() => navigate(`/consult/${appointment.id}`)}
-          className="flex min-w-0 flex-1 items-center gap-4 rounded-xl text-left transition-colors hover:bg-cream-100/60"
+          className="flex min-w-0 flex-1 items-center gap-4 rounded-xl text-left transition-colors hover:bg-surface-100/60"
         >
-          <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-bottle-100 font-display text-base font-semibold text-bottle-700">
+          <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand-100 font-display text-base font-semibold text-brand-700">
             {initials(patient?.full_name)}
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span className="truncate font-display text-lg font-semibold text-bottle-800">
+              <span className="truncate font-display text-lg font-semibold text-brand-800">
                 {patient?.full_name ?? 'Unknown patient'}
               </span>
               <StatusBadge status={appointment.status} />
@@ -94,7 +94,7 @@ export function AppointmentCard({
               )}
             </p>
             {appointment.reason && (
-              <p className="mt-1.5 line-clamp-2 rounded-lg bg-cream-200/70 px-3 py-1.5 text-sm text-bottle-800">
+              <p className="mt-1.5 line-clamp-2 rounded-lg bg-surface-200/70 px-3 py-1.5 text-sm text-brand-800">
                 {appointment.reason}
               </p>
             )}

@@ -70,7 +70,7 @@ export function AppointmentCalendar() {
     <div className="space-y-5">
       {/* ------------------------------------------------------ month header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-display text-2xl font-semibold text-bottle-800">
+        <h2 className="font-display text-2xl font-semibold text-brand-800">
           {monthLabel(year, monthIndex)}
         </h2>
         <div className="flex items-center gap-2">
@@ -94,7 +94,7 @@ export function AppointmentCalendar() {
             {WEEKDAYS.map((day) => (
               <div
                 key={day}
-                className="py-1 text-center text-[0.7rem] font-bold uppercase tracking-wider text-bottle-600"
+                className="py-1 text-center text-[0.7rem] font-bold uppercase tracking-wider text-brand-600"
               >
                 {day}
               </div>
@@ -125,24 +125,24 @@ export function AppointmentCalendar() {
                     className={cn(
                       'flex h-24 flex-col gap-1 rounded-xl border p-1.5 text-left transition-colors',
                       cell.inMonth
-                        ? 'border-cream-500/50 bg-card hover:bg-cream-100'
-                        : 'border-transparent bg-cream-100/40 text-muted-foreground/60',
-                      isToday && 'border-bottle-400 bg-bottle-50',
-                      isSelected && 'ring-2 ring-bottle-500 ring-offset-1 ring-offset-background',
+                        ? 'border-surface-500/50 bg-card hover:bg-surface-100'
+                        : 'border-transparent bg-surface-100/40 text-muted-foreground/60',
+                      isToday && 'border-brand-400 bg-brand-50',
+                      isSelected && 'ring-2 ring-brand-500 ring-offset-1 ring-offset-background',
                     )}
                   >
                     <span className="flex items-center justify-between px-0.5">
                       <span
                         className={cn(
                           'text-sm font-bold',
-                          isToday ? 'text-bottle-700' : 'text-bottle-800/80',
+                          isToday ? 'text-brand-700' : 'text-brand-800/80',
                           !cell.inMonth && 'font-medium text-muted-foreground/60',
                         )}
                       >
                         {cell.dayOfMonth}
                       </span>
                       {live.length > 0 && (
-                        <span className="rounded-full bg-bottle-600 px-1.5 text-[0.65rem] font-bold text-cream-100">
+                        <span className="rounded-full bg-brand-600 px-1.5 text-[0.65rem] font-bold text-surface-100">
                           {live.length}
                         </span>
                       )}
@@ -152,7 +152,7 @@ export function AppointmentCalendar() {
                       {list.slice(0, 2).map((appointment) => (
                         <span
                           key={appointment.id}
-                          className="flex items-center gap-1 truncate rounded px-1 py-0.5 text-[0.65rem] text-bottle-800"
+                          className="flex items-center gap-1 truncate rounded px-1 py-0.5 text-[0.65rem] text-brand-800"
                           title={`${formatTime(appointment.scheduled_at)} — ${appointment.patient?.full_name ?? ''}`}
                         >
                           <span
@@ -182,9 +182,9 @@ export function AppointmentCalendar() {
       </div>
 
       {/* ----------------------------------------------------------- legend */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-cream-500/40 bg-cream-100/60 px-4 py-2.5">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-surface-500/40 bg-surface-100/60 px-4 py-2.5">
         {(['booked', 'in_progress', 'completed', 'cancelled'] as const).map((status) => (
-          <span key={status} className="flex items-center gap-1.5 text-xs font-semibold text-bottle-700">
+          <span key={status} className="flex items-center gap-1.5 text-xs font-semibold text-brand-700">
             <span className={cn('size-2 rounded-full', STATUS_META[status].dot)} />
             {STATUS_META[status].label}
           </span>
@@ -193,7 +193,7 @@ export function AppointmentCalendar() {
 
       {/* -------------------------------------------------- selected day list */}
       <section className="space-y-3">
-        <h3 className="font-display text-xl font-semibold text-bottle-800">
+        <h3 className="font-display text-xl font-semibold text-brand-800">
           {selected === today ? 'Today' : formatDate(`${selected}T00:00:00+05:30`)}
           <span className="ml-2 text-base font-normal text-muted-foreground">
             ({selectedList.length} {selectedList.length === 1 ? 'appointment' : 'appointments'})

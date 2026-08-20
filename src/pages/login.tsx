@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Navigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -38,7 +38,7 @@ export function LoginPage() {
 
         <Card>
           <CardContent className="pt-6 sm:pt-8">
-            <h1 className="font-display text-2xl font-semibold text-bottle-800">Sign in</h1>
+            <h1 className="font-display text-2xl font-semibold text-brand-800">Sign in</h1>
             <p className="mt-1.5 text-sm text-muted-foreground">
               You will stay signed in on this device.
             </p>
@@ -75,8 +75,11 @@ export function LoginPage() {
           </CardContent>
         </Card>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          Accounts are created by your clinic administrator.
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          New here?{' '}
+          <Link to="/signup" className="font-semibold text-brand-600 hover:underline">
+            Create your doctor account
+          </Link>
         </p>
       </div>
     </div>

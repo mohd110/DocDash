@@ -13,12 +13,20 @@ export async function renderPrescriptionBlob(data: PrescriptionData): Promise<Bl
   return pdf(<PrescriptionDocument {...data} />).toBlob()
 }
 
-/** Uploads the rendered PDF to Supabase Storage and returns its public URL. */
+/**
+ * Uploads the rendered PDF to Supabase Storage and returns its public URL.
+ * Objects live under `<doctor_id>/<appointment_id>/` — the storage policy only
+ * allows a doctor to write inside their own folder.
+ */
 export async function uploadPrescriptionPdf(
   blob: Blob,
   appointmentId: string,
 ): Promise<string> {
-  const path = `${appointmentId}/prescription-${Date.now()}.pdf`
+  const { data: auth } = await supabase.auth.getUser()
+  const doctorId = auth.user?.id
+  if (!doctorId) throw new Error('You are signed out. Sign in again to save the prescription.')
+
+  const path = `${doctorId}/${appointmentId}/prescription-${Date.now()}.pdf`
 
   const { error } = await supabase.storage
     .from(PRESCRIPTION_BUCKET)

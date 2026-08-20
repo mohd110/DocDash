@@ -24,11 +24,11 @@ export function PrintablePrescription({
   patient,
   appointment,
   consultation,
-  settings,
+  doctor,
 }: PrescriptionData) {
   const meds = consultation.prescription_items
-  const clinicName = settings.clinic_name?.trim() || 'Hakiman Clinic'
-  const doctorName = settings.doctor_name?.trim() || 'Dr. Salim'
+  const clinicName = doctor.clinic_name?.trim() || doctor.full_name?.trim() || 'Clinic'
+  const doctorName = doctor.full_name?.trim() || 'Doctor'
 
   return (
     <article
@@ -36,21 +36,21 @@ export function PrintablePrescription({
       className="mx-auto w-full max-w-[210mm] bg-white p-8 text-black shadow-card print:max-w-none print:p-0 print:shadow-none"
     >
       {/* ── 1. clinic letterhead ─────────────────────────────────────────── */}
-      <header className="flex items-center gap-4 border-b-4 border-bottle-600 pb-4 print:border-black">
-        {settings.logo_url && (
+      <header className="flex items-center gap-4 border-b-4 border-brand-600 pb-4 print:border-black">
+        {doctor.logo_url && (
           <img
-            src={settings.logo_url}
+            src={doctor.logo_url}
             alt=""
             className="size-16 shrink-0 object-contain"
             crossOrigin="anonymous"
           />
         )}
         <div className="min-w-0 flex-1">
-          <h1 className="font-display text-3xl uppercase tracking-tight text-bottle-700 print:text-black">
+          <h1 className="font-display text-3xl uppercase tracking-tight text-brand-700 print:text-black">
             {clinicName}
           </h1>
-          {settings.address && (
-            <p className="mt-1 whitespace-pre-wrap text-xs text-black/65">{settings.address}</p>
+          {doctor.address && (
+            <p className="mt-1 whitespace-pre-wrap text-xs text-black/65">{doctor.address}</p>
           )}
         </div>
       </header>
@@ -58,7 +58,7 @@ export function PrintablePrescription({
       {/* ── 2. patient (left) · prescribing doctor (right) ───────────────── */}
       <section className="grid gap-6 border-b border-black/15 py-5 sm:grid-cols-[1.35fr_1fr]">
         <div className="space-y-1.5">
-          <p className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-bottle-600 print:text-black/60">
+          <p className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-brand-600 print:text-black/60">
             Patient
           </p>
           <p className="font-display text-xl leading-tight">{patient.full_name}</p>
@@ -83,18 +83,18 @@ export function PrintablePrescription({
         </div>
 
         <div className="space-y-1.5 sm:border-l sm:border-black/15 sm:pl-6">
-          <p className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-bottle-600 print:text-black/60">
+          <p className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-brand-600 print:text-black/60">
             Prescribed by
           </p>
           <p className="font-display text-xl leading-tight">{doctorName}</p>
-          {settings.qualifications && (
-            <p className="text-sm font-semibold text-black/75">{settings.qualifications}</p>
+          {doctor.qualifications && (
+            <p className="text-sm font-semibold text-black/75">{doctor.qualifications}</p>
           )}
-          {settings.registration_no && (
-            <p className="text-xs text-black/60">Reg. No. {settings.registration_no}</p>
+          {doctor.registration_no && (
+            <p className="text-xs text-black/60">Reg. No. {doctor.registration_no}</p>
           )}
-          {settings.working_hours && (
-            <p className="pt-1 text-xs text-black/55">{settings.working_hours}</p>
+          {doctor.working_hours && (
+            <p className="pt-1 text-xs text-black/55">{doctor.working_hours}</p>
           )}
         </div>
       </section>
@@ -102,7 +102,7 @@ export function PrintablePrescription({
       {/* ── 3. the prescription ──────────────────────────────────────────── */}
       <div className="flex items-start gap-4 pt-5">
         <span
-          className="font-display text-5xl leading-none text-bottle-500 print:text-black/45"
+          className="font-display text-5xl leading-none text-brand-500 print:text-black/45"
           aria-label="Prescription"
         >
           ℞
@@ -111,7 +111,7 @@ export function PrintablePrescription({
         <div className="min-w-0 flex-1 space-y-5">
           {consultation.diagnosis && (
             <section>
-              <h2 className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-bottle-600 print:text-black">
+              <h2 className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-brand-600 print:text-black">
                 Findings / Diagnosis
               </h2>
               <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed">
@@ -122,12 +122,12 @@ export function PrintablePrescription({
 
           {meds.length > 0 && (
             <section>
-              <h2 className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-bottle-600 print:text-black">
+              <h2 className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-brand-600 print:text-black">
                 Medicines
               </h2>
               <table className="mt-1.5 w-full border-collapse text-left text-sm">
                 <thead>
-                  <tr className="bg-bottle-600 text-cream-100 print:bg-black/85">
+                  <tr className="bg-brand-600 text-surface-100 print:bg-black/85">
                     {['#', 'Medicine', 'Dosage', 'Frequency', 'Duration', 'Instructions'].map(
                       (heading) => (
                         <th
@@ -160,7 +160,7 @@ export function PrintablePrescription({
 
           {consultation.advice && (
             <section>
-              <h2 className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-bottle-600 print:text-black">
+              <h2 className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-brand-600 print:text-black">
                 Advice / Notes
               </h2>
               <p className="mt-1.5 whitespace-pre-wrap text-sm leading-relaxed">
@@ -170,7 +170,7 @@ export function PrintablePrescription({
           )}
 
           {consultation.follow_up_date && (
-            <p className="border-l-4 border-bottle-600 bg-bottle-50 px-3 py-2 text-sm font-bold print:border-black print:bg-transparent">
+            <p className="border-l-4 border-brand-600 bg-brand-50 px-3 py-2 text-sm font-bold print:border-black print:bg-transparent">
               Follow-up on {formatDate(`${consultation.follow_up_date}T00:00:00+05:30`)}
             </p>
           )}
@@ -183,17 +183,17 @@ export function PrintablePrescription({
           {clinicName} · Generated {formatDateTime(new Date().toISOString())} IST
         </p>
         <div className="text-right">
-          {settings.signature_url && (
+          {doctor.signature_url && (
             <img
-              src={settings.signature_url}
+              src={doctor.signature_url}
               alt=""
               className="ml-auto h-14 object-contain"
               crossOrigin="anonymous"
             />
           )}
           <p className="mt-1 border-t border-black/40 pt-1 text-sm font-bold">{doctorName}</p>
-          {settings.qualifications && (
-            <p className="text-[0.6rem] text-black/60">{settings.qualifications}</p>
+          {doctor.qualifications && (
+            <p className="text-[0.6rem] text-black/60">{doctor.qualifications}</p>
           )}
         </div>
       </footer>

@@ -1,12 +1,12 @@
-import type { ClinicSettings } from '@/lib/types'
+import type { DoctorProfile } from '@/lib/types'
 
 /**
  * Outbound calls to the n8n agent (PRD §6). The dashboard never talks to
  * WhatsApp itself — it hands n8n a payload and n8n does the delivery.
  */
 
-function endpoint(settings: ClinicSettings, path: string) {
-  const base = settings.n8n_webhook_url?.trim().replace(/\/+$/, '')
+function endpoint(doctor: DoctorProfile, path: string) {
+  const base = doctor.n8n_webhook_url?.trim().replace(/\/+$/, '')
   if (!base) return null
   return `${base}/${path.replace(/^\/+/, '')}`
 }
@@ -44,13 +44,26 @@ export class N8nNotConfiguredError extends Error {
   }
 }
 
+/**
+ * Who the message is from. A shared n8n workflow can serve several practices,
+ * so every outbound payload names the doctor it belongs to — and the WhatsApp
+ * text the patient receives should say the same.
+ */
+function sender(doctor: DoctorProfile) {
+  return {
+    doctor_id: doctor.id,
+    doctor_name: doctor.full_name,
+    clinic_name: doctor.clinic_name,
+  }
+}
+
 export async function sendPrescriptionToN8n(
-  settings: ClinicSettings,
+  doctor: DoctorProfile,
   payload: SendPrescriptionPayload,
 ) {
-  const url = endpoint(settings, 'send-prescription')
+  const url = endpoint(doctor, 'send-prescription')
   if (!url) throw new N8nNotConfiguredError()
-  await post(url, settings.n8n_api_key, payload)
+  await post(url, doctor.n8n_api_key, { ...sender(doctor), ...payload })
 }
 
 export type AppointmentUpdateEvent =
@@ -74,10 +87,10 @@ export interface AppointmentUpdatePayload {
  * doctor's own action from succeeding. Callers surface failures as a toast.
  */
 export async function notifyAppointmentUpdated(
-  settings: ClinicSettings,
+  doctor: DoctorProfile,
   payload: AppointmentUpdatePayload,
 ) {
-  const url = endpoint(settings, 'appointment-updated')
+  const url = endpoint(doctor, 'appointment-updated')
   if (!url) throw new N8nNotConfiguredError()
-  await post(url, settings.n8n_api_key, payload)
+  await post(url, doctor.n8n_api_key, { ...sender(doctor), ...payload })
 }

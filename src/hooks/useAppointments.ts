@@ -12,7 +12,7 @@ import {
   updateAppointmentStatus,
   type AppointmentScope,
 } from '@/api/appointments'
-import { getClinicSettings } from '@/api/settings'
+import { requireDoctorProfile } from '@/api/doctor'
 import {
   N8nNotConfiguredError,
   notifyAppointmentUpdated,
@@ -68,8 +68,8 @@ async function tellAgent(
   extra?: { follow_up_date?: string | null; note?: string | null },
 ) {
   try {
-    const settings = await getClinicSettings()
-    await notifyAppointmentUpdated(settings, {
+    const doctor = await requireDoctorProfile()
+    await notifyAppointmentUpdated(doctor, {
       event,
       appointment_id: appointment.id,
       patient_phone: appointment.patient?.phone ?? '',

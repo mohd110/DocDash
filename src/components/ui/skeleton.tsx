@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 
 export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('animate-pulse rounded-lg bg-cream-300/70', className)} {...props} />
+  return <div className={cn('animate-pulse rounded-lg bg-surface-300/70', className)} {...props} />
 }
 
 /** Placeholder stack used while appointment/patient lists load. */

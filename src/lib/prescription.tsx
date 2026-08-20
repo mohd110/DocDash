@@ -7,137 +7,150 @@ import {
   View,
 } from '@react-pdf/renderer'
 import { formatDate, formatDateTime } from './date'
+import { buildPrintPalette, themeFrom, type PrintPalette } from './theme'
 import type { PrescriptionData } from './prescription-data'
 
-const BOTTLE = '#0B5540'
-const BOTTLE_LIGHT = '#4A9377'
-const CREAM = '#FDF8EC'
-const INK = '#132A22'
-const MUTED = '#5B6F66'
+/**
+ * The PDF is the doctor's letterhead, so it follows the colours they picked in
+ * Settings. A PDF has no CSS variables to resolve, so the sheet is built per
+ * render from their palette rather than declared once at module scope.
+ */
+function createStyles(p: PrintPalette) {
+  return StyleSheet.create({
+    page: {
+      backgroundColor: p.surface,
+      paddingTop: 34,
+      paddingBottom: 56,
+      paddingHorizontal: 38,
+      fontSize: 10.5,
+      color: p.ink,
+      fontFamily: 'Helvetica',
+    },
+    /* 1. clinic letterhead */
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderBottomWidth: 3,
+      borderBottomColor: p.brand,
+      paddingBottom: 12,
+    },
+    logo: { width: 54, height: 54, marginRight: 14, objectFit: 'contain' },
+    clinicName: { fontSize: 22, fontFamily: 'Helvetica-Bold', color: p.brand, letterSpacing: 0.5 },
+    clinicMeta: { fontSize: 8.5, color: p.muted, marginTop: 3 },
 
-const styles = StyleSheet.create({
-  page: {
-    backgroundColor: CREAM,
-    paddingTop: 34,
-    paddingBottom: 56,
-    paddingHorizontal: 38,
-    fontSize: 10.5,
-    color: INK,
-    fontFamily: 'Helvetica',
-  },
-  /* 1. clinic letterhead */
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 3,
-    borderBottomColor: BOTTLE,
-    paddingBottom: 12,
-  },
-  logo: { width: 54, height: 54, marginRight: 14, objectFit: 'contain' },
-  clinicName: { fontSize: 22, fontFamily: 'Helvetica-Bold', color: BOTTLE, letterSpacing: 0.5 },
-  clinicMeta: { fontSize: 8.5, color: MUTED, marginTop: 3 },
+    /* 2. patient (left) · prescribing doctor (right) */
+    partiesRow: {
+      flexDirection: 'row',
+      borderBottomWidth: 1,
+      borderBottomColor: p.rule,
+      paddingVertical: 14,
+    },
+    partyLeft: { width: '57%', paddingRight: 16 },
+    partyRight: {
+      width: '43%',
+      paddingLeft: 16,
+      borderLeftWidth: 1,
+      borderLeftColor: p.rule,
+    },
+    partyLabel: {
+      fontSize: 7,
+      color: p.muted,
+      fontFamily: 'Helvetica-Bold',
+      letterSpacing: 1.2,
+      marginBottom: 4,
+    },
+    partyName: { fontSize: 15, fontFamily: 'Helvetica-Bold', marginBottom: 5 },
+    line: { flexDirection: 'row', marginBottom: 2.5 },
+    lineLabel: { width: 62, fontSize: 9, color: p.muted, fontFamily: 'Helvetica-Bold' },
+    lineValue: { flex: 1, fontSize: 9.5 },
+    doctorQual: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: p.ink, marginBottom: 2 },
+    doctorMeta: { fontSize: 8.5, color: p.muted, marginBottom: 2 },
 
-  /* 2. patient (left) · prescribing doctor (right) */
-  partiesRow: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E4D3A6',
-    paddingVertical: 14,
-  },
-  partyLeft: { width: '57%', paddingRight: 16 },
-  partyRight: {
-    width: '43%',
-    paddingLeft: 16,
-    borderLeftWidth: 1,
-    borderLeftColor: '#E4D3A6',
-  },
-  partyLabel: {
-    fontSize: 7,
-    color: MUTED,
-    fontFamily: 'Helvetica-Bold',
-    letterSpacing: 1.2,
-    marginBottom: 4,
-  },
-  partyName: { fontSize: 15, fontFamily: 'Helvetica-Bold', marginBottom: 5 },
-  line: { flexDirection: 'row', marginBottom: 2.5 },
-  lineLabel: { width: 62, fontSize: 9, color: MUTED, fontFamily: 'Helvetica-Bold' },
-  lineValue: { flex: 1, fontSize: 9.5 },
-  doctorQual: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: INK, marginBottom: 2 },
-  doctorMeta: { fontSize: 8.5, color: MUTED, marginBottom: 2 },
+    /* 3. the prescription */
+    bodyRow: { flexDirection: 'row', paddingTop: 14 },
+    rxMark: { fontSize: 34, fontFamily: 'Helvetica-Bold', color: p.brandLight, marginRight: 12 },
+    bodyCol: { flex: 1 },
 
-  /* 3. the prescription */
-  bodyRow: { flexDirection: 'row', paddingTop: 14 },
-  rxMark: { fontSize: 34, fontFamily: 'Helvetica-Bold', color: BOTTLE_LIGHT, marginRight: 12 },
-  bodyCol: { flex: 1 },
+    sectionTitle: {
+      fontSize: 9,
+      fontFamily: 'Helvetica-Bold',
+      color: p.brand,
+      letterSpacing: 1.2,
+      marginTop: 14,
+      marginBottom: 5,
+    },
+    paragraph: { fontSize: 10.5, lineHeight: 1.5 },
 
-  sectionTitle: {
-    fontSize: 9,
-    fontFamily: 'Helvetica-Bold',
-    color: BOTTLE,
-    letterSpacing: 1.2,
-    marginTop: 14,
-    marginBottom: 5,
-  },
-  paragraph: { fontSize: 10.5, lineHeight: 1.5 },
+    table: { borderWidth: 1, borderColor: p.rule, borderRadius: 6, overflow: 'hidden' },
+    tableHead: { flexDirection: 'row', backgroundColor: p.brand },
+    th: {
+      fontSize: 8,
+      fontFamily: 'Helvetica-Bold',
+      color: p.surface,
+      padding: 7,
+      letterSpacing: 0.5,
+    },
+    tr: {
+      flexDirection: 'row',
+      borderTopWidth: 1,
+      borderTopColor: '#EFE3C2',
+      backgroundColor: '#FFFFFF',
+    },
+    td: { fontSize: 9.5, padding: 7 },
+    colNo: { width: '7%' },
+    colMed: { width: '29%' },
+    colDose: { width: '15%' },
+    colFreq: { width: '16%' },
+    colDur: { width: '15%' },
+    colInstr: { width: '18%' },
 
-  table: { borderWidth: 1, borderColor: '#E4D3A6', borderRadius: 6, overflow: 'hidden' },
-  tableHead: { flexDirection: 'row', backgroundColor: BOTTLE },
-  th: {
-    fontSize: 8,
-    fontFamily: 'Helvetica-Bold',
-    color: CREAM,
-    padding: 7,
-    letterSpacing: 0.5,
-  },
-  tr: {
-    flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: '#EFE3C2',
-    backgroundColor: '#FFFFFF',
-  },
-  td: { fontSize: 9.5, padding: 7 },
-  colNo: { width: '7%' },
-  colMed: { width: '29%' },
-  colDose: { width: '15%' },
-  colFreq: { width: '16%' },
-  colDur: { width: '15%' },
-  colInstr: { width: '18%' },
+    followUp: {
+      marginTop: 14,
+      padding: 10,
+      borderRadius: 6,
+      backgroundColor: '#D8E9E0',
+      borderLeftWidth: 3,
+      borderLeftColor: p.brand,
+    },
 
-  followUp: {
-    marginTop: 14,
-    padding: 10,
-    borderRadius: 6,
-    backgroundColor: '#D8E9E0',
-    borderLeftWidth: 3,
-    borderLeftColor: BOTTLE,
-  },
+    signBlock: { marginTop: 30, alignItems: 'flex-end' },
+    signature: { width: 130, height: 46, objectFit: 'contain' },
+    signLine: {
+      borderTopWidth: 1,
+      borderTopColor: p.muted,
+      width: 150,
+      marginTop: 4,
+      paddingTop: 4,
+      textAlign: 'right',
+    },
 
-  signBlock: { marginTop: 30, alignItems: 'flex-end' },
-  signature: { width: 130, height: 46, objectFit: 'contain' },
-  signLine: {
-    borderTopWidth: 1,
-    borderTopColor: MUTED,
-    width: 150,
-    marginTop: 4,
-    paddingTop: 4,
-    textAlign: 'right',
-  },
+    footer: {
+      position: 'absolute',
+      bottom: 22,
+      left: 38,
+      right: 38,
+      borderTopWidth: 1,
+      borderTopColor: p.rule,
+      paddingTop: 7,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    footerText: { fontSize: 7.5, color: p.muted },
+  })
+}
 
-  footer: {
-    position: 'absolute',
-    bottom: 22,
-    left: 38,
-    right: 38,
-    borderTopWidth: 1,
-    borderTopColor: '#E4D3A6',
-    paddingTop: 7,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  footerText: { fontSize: 7.5, color: MUTED },
-})
+/** The sheet, once built — passed down rather than reached for. */
+type Styles = ReturnType<typeof createStyles>
 
-function Line({ label, value }: { label: string; value: string }) {
+function Line({
+  label,
+  value,
+  styles,
+}: {
+  label: string
+  value: string
+  styles: Styles
+}) {
   return (
     <View style={styles.line}>
       <Text style={styles.lineLabel}>{label}</Text>
@@ -150,11 +163,13 @@ export function PrescriptionDocument({
   patient,
   appointment,
   consultation,
-  settings,
+  doctor,
 }: PrescriptionData) {
+  const palette = buildPrintPalette(themeFrom(doctor.theme_primary, doctor.theme_background))
+  const styles = createStyles(palette)
   const meds = consultation.prescription_items
-  const clinicName = settings.clinic_name?.trim() || 'Hakiman Clinic'
-  const doctorName = settings.doctor_name?.trim() || 'Dr. Salim'
+  const clinicName = doctor.clinic_name?.trim() || doctor.full_name?.trim() || 'Clinic'
+  const doctorName = doctor.full_name?.trim() || 'Doctor'
 
   return (
     <Document
@@ -165,10 +180,10 @@ export function PrescriptionDocument({
       <Page size="A4" style={styles.page}>
         {/* ------------------------------------------- 1. clinic letterhead */}
         <View style={styles.header}>
-          {settings.logo_url ? <Image src={settings.logo_url} style={styles.logo} /> : null}
+          {doctor.logo_url ? <Image src={doctor.logo_url} style={styles.logo} /> : null}
           <View style={{ flex: 1 }}>
             <Text style={styles.clinicName}>{clinicName.toUpperCase()}</Text>
-            {settings.address ? <Text style={styles.clinicMeta}>{settings.address}</Text> : null}
+            {doctor.address ? <Text style={styles.clinicMeta}>{doctor.address}</Text> : null}
           </View>
         </View>
 
@@ -178,6 +193,7 @@ export function PrescriptionDocument({
             <Text style={styles.partyLabel}>PATIENT</Text>
             <Text style={styles.partyName}>{patient.full_name}</Text>
             <Line
+              styles={styles}
               label="Age / Sex"
               value={
                 [
@@ -190,26 +206,26 @@ export function PrescriptionDocument({
                   .join(' · ') || '—'
               }
             />
-            <Line label="Phone" value={patient.phone} />
-            <Line label="Date" value={formatDate(appointment.scheduled_at)} />
-            {appointment.reason ? <Line label="Complaint" value={appointment.reason} /> : null}
-            {patient.allergies ? <Line label="Allergies" value={patient.allergies} /> : null}
+            <Line label="Phone" value={patient.phone} styles={styles} />
+            <Line label="Date" value={formatDate(appointment.scheduled_at)} styles={styles} />
+            {appointment.reason ? <Line label="Complaint" value={appointment.reason} styles={styles} /> : null}
+            {patient.allergies ? <Line label="Allergies" value={patient.allergies} styles={styles} /> : null}
             {patient.chronic_conditions ? (
-              <Line label="Conditions" value={patient.chronic_conditions} />
+              <Line label="Conditions" value={patient.chronic_conditions} styles={styles} />
             ) : null}
           </View>
 
           <View style={styles.partyRight}>
             <Text style={styles.partyLabel}>PRESCRIBED BY</Text>
             <Text style={styles.partyName}>{doctorName}</Text>
-            {settings.qualifications ? (
-              <Text style={styles.doctorQual}>{settings.qualifications}</Text>
+            {doctor.qualifications ? (
+              <Text style={styles.doctorQual}>{doctor.qualifications}</Text>
             ) : null}
-            {settings.registration_no ? (
-              <Text style={styles.doctorMeta}>Reg. No. {settings.registration_no}</Text>
+            {doctor.registration_no ? (
+              <Text style={styles.doctorMeta}>Reg. No. {doctor.registration_no}</Text>
             ) : null}
-            {settings.working_hours ? (
-              <Text style={styles.doctorMeta}>{settings.working_hours}</Text>
+            {doctor.working_hours ? (
+              <Text style={styles.doctorMeta}>{doctor.working_hours}</Text>
             ) : null}
           </View>
         </View>
@@ -261,7 +277,7 @@ export function PrescriptionDocument({
 
             {consultation.follow_up_date ? (
               <View style={styles.followUp}>
-                <Text style={{ fontFamily: 'Helvetica-Bold', color: BOTTLE }}>
+                <Text style={{ fontFamily: 'Helvetica-Bold', color: palette.brand }}>
                   Follow-up on {formatDate(`${consultation.follow_up_date}T00:00:00+05:30`)}
                 </Text>
               </View>
@@ -271,12 +287,12 @@ export function PrescriptionDocument({
 
         {/* ------------------------------------------------------- signature */}
         <View style={styles.signBlock}>
-          {settings.signature_url ? (
-            <Image src={settings.signature_url} style={styles.signature} />
+          {doctor.signature_url ? (
+            <Image src={doctor.signature_url} style={styles.signature} />
           ) : null}
           <Text style={[styles.signLine, { fontFamily: 'Helvetica-Bold' }]}>{doctorName}</Text>
-          {settings.qualifications ? (
-            <Text style={{ fontSize: 8, color: MUTED, marginTop: 2 }}>{settings.qualifications}</Text>
+          {doctor.qualifications ? (
+            <Text style={{ fontSize: 8, color: palette.muted, marginTop: 2 }}>{doctor.qualifications}</Text>
           ) : null}
         </View>
 

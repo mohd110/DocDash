@@ -18,14 +18,14 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-cream-500/60 bg-cream-100/60 px-6 py-14 text-center',
+        'flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-surface-500/60 bg-surface-100/60 px-6 py-14 text-center',
         className,
       )}
     >
       <div className="text-4xl" aria-hidden>
         {emoji}
       </div>
-      <h3 className="font-display text-xl font-semibold text-bottle-800">{title}</h3>
+      <h3 className="font-display text-xl font-semibold text-brand-800">{title}</h3>
       {description && (
         <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">{description}</p>
       )}

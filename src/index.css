@@ -4,6 +4,34 @@
 
 @layer base {
   :root {
+    /* Default palette — cream paper + bottle green ink. Every value here is
+       overwritten at runtime by the doctor's own theme (src/lib/theme.ts);
+       these are what the login screen and a doctor who never picked show. */
+
+    /* Paper scale */
+    --surface-50: 45.0 100.0% 98.4%;
+    --surface-100: 42.4 81.0% 95.9%;
+    --surface-200: 43.4 64.4% 91.2%;
+    --surface-300: 44.0 58.4% 84.9%;
+    --surface-400: 43.5 53.4% 77.3%;
+    --surface-500: 42.7 50.3% 67.6%;
+
+    /* Ink scale */
+    --brand-50: 145.7 28.0% 95.1%;
+    --brand-100: 148.2 27.9% 88.0%;
+    --brand-200: 150.0 29.0% 75.7%;
+    --brand-300: 152.1 28.7% 60.4%;
+    --brand-400: 157.0 33.0% 43.3%;
+    --brand-500: 160.4 66.9% 26.1%;
+    --brand-600: 163.0 77.1% 18.8%;
+    --brand-700: 163.3 75.0% 14.1%;
+    --brand-800: 161.0 74.5% 10.8%;
+    --brand-900: 160.0 75.0% 7.8%;
+
+    /* Tints for the paper texture and the card shadows */
+    --texture-dot: 40 40% 88%;
+    --shadow-color: 163 77% 14%;
+
     /* Cream paper */
     --background: 42 81% 96%;
     --foreground: 163 32% 12%;
@@ -45,7 +73,7 @@
   body {
     @apply bg-background text-foreground antialiased;
     /* Subtle paper texture so the cream reads warm rather than flat */
-    background-image: radial-gradient(hsl(40 40% 88% / 0.5) 1px, transparent 1px);
+    background-image: radial-gradient(hsl(var(--texture-dot) / 0.5) 1px, transparent 1px);
     background-size: 22px 22px;
   }
 

@@ -96,7 +96,7 @@ export function AppointmentsPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <header>
-        <h1 className="font-display text-3xl font-semibold text-bottle-800 sm:text-4xl">
+        <h1 className="font-display text-3xl font-semibold text-brand-800 sm:text-4xl">
           Appointments
         </h1>
         <p className="mt-1.5 text-sm text-muted-foreground">

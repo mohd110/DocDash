@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { getClinicSettings } from '@/api/settings'
+import { requireDoctorProfile } from '@/api/doctor'
 import { getConsultationById, setDeliveryStatus } from '@/api/consultations'
 import { generatePrescription, openPrescriptionPreview } from '@/api/prescriptions'
 import { N8nNotConfiguredError, sendPrescriptionToN8n } from '@/api/n8n'
@@ -27,8 +27,8 @@ export async function deliverPrescription({
   consultation,
   regenerate = false,
 }: DeliverInput) {
-  const settings = await getClinicSettings()
-  const data = { patient, appointment, consultation, settings }
+  const doctor = await requireDoctorProfile()
+  const data = { patient, appointment, consultation, doctor }
 
   let pdfUrl = consultation.prescription_pdf_url
   if (regenerate || !pdfUrl) {
@@ -44,7 +44,7 @@ export async function deliverPrescription({
   await setDeliveryStatus(consultation.id, 'pending')
 
   try {
-    await sendPrescriptionToN8n(settings, {
+    await sendPrescriptionToN8n(doctor, {
       patient_phone: patient.phone,
       patient_name: patient.full_name,
       pdf_url: pdfUrl,

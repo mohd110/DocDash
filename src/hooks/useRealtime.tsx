@@ -2,6 +2,7 @@ import * as React from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { isSupabaseConfigured, supabase } from '@/lib/supabase'
+import { useAuth } from './useAuth'
 import { APPOINTMENT_SCOPED_KEYS } from './queryKeys'
 
 interface RealtimeContextValue {
@@ -20,14 +21,20 @@ const FLASH_MS = 6000
 /**
  * One Supabase Realtime subscription for the whole app (§3.1). New WhatsApp
  * bookings land in the cache without a refresh and briefly highlight themselves.
+ *
+ * Every subscription is filtered to the signed-in doctor's tenant, so another
+ * practice's bookings never reach this browser — nor pop a toast in it.
  */
 export function RealtimeProvider({ children }: { children: React.ReactNode }) {
   const client = useQueryClient()
+  const { doctorId } = useAuth()
   const [freshIds, setFreshIds] = React.useState<Set<string>>(new Set())
   const [connected, setConnected] = React.useState(false)
 
   React.useEffect(() => {
-    if (!isSupabaseConfigured) return
+    if (!isSupabaseConfigured || !doctorId) return
+
+    const mine = `doctor_id=eq.${doctorId}`
 
     const refresh = () => {
       for (const key of APPOINTMENT_SCOPED_KEYS) {
@@ -36,10 +43,10 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
     }
 
     const channel = supabase
-      .channel('hakiman-live')
+      .channel(`docdash-live-${doctorId}`)
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'appointments' },
+        { event: 'INSERT', schema: 'public', table: 'appointments', filter: mine },
         (payload) => {
           const id = (payload.new as { id?: string })?.id
           if (id) {
@@ -60,24 +67,28 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
       )
       .on(
         'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'appointments' },
+        { event: 'UPDATE', schema: 'public', table: 'appointments', filter: mine },
         refresh,
       )
       .on(
         'postgres_changes',
-        { event: 'DELETE', schema: 'public', table: 'appointments' },
+        { event: 'DELETE', schema: 'public', table: 'appointments', filter: mine },
         refresh,
       )
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'patients' }, () =>
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'patients', filter: mine }, () =>
         client.invalidateQueries({ queryKey: ['patients'] }),
       )
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'consultations' }, refresh)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'consultations', filter: mine },
+        refresh,
+      )
       .subscribe((status) => setConnected(status === 'SUBSCRIBED'))
 
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [client])
+  }, [client, doctorId])
 
   const value = React.useMemo(() => ({ freshIds, connected }), [freshIds, connected])
 

@@ -36,7 +36,7 @@ function InlineEditable({
   const box =
     tone === 'warn' && filled
       ? 'border-amber-300 bg-amber-50 text-amber-900'
-      : 'border-cream-500/50 bg-cream-100/70 text-bottle-800'
+      : 'border-surface-500/50 bg-surface-100/70 text-brand-800'
 
   return (
     <div className={`rounded-xl border px-3.5 py-3 ${box}`}>
@@ -109,13 +109,13 @@ export function PatientSummary({
   const { update } = useSavePatient()
 
   return (
-    <div className="rounded-2xl border border-cream-500/40 bg-card p-5 shadow-card">
+    <div className="rounded-2xl border border-surface-500/40 bg-card p-5 shadow-card">
       <div className="flex items-start gap-4">
-        <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-bottle-100 font-display text-lg font-semibold text-bottle-700">
+        <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-brand-100 font-display text-lg font-semibold text-brand-700">
           {initials(patient.full_name)}
         </div>
         <div className="min-w-0 flex-1">
-          <h2 className="truncate font-display text-2xl font-semibold text-bottle-800">
+          <h2 className="truncate font-display text-2xl font-semibold text-brand-800">
             {patient.full_name}
           </h2>
           <p className="mt-0.5 flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -124,7 +124,7 @@ export function PatientSummary({
           </p>
           <a
             href={`tel:${patient.phone}`}
-            className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-bottle-600 hover:underline"
+            className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:underline"
           >
             <Phone className="size-3.5" />
             {patient.phone}
@@ -133,11 +133,11 @@ export function PatientSummary({
       </div>
 
       {reason && (
-        <div className="mt-4 rounded-xl border-l-4 border-l-bottle-400 bg-cream-200/70 px-3.5 py-3">
-          <p className="text-[0.7rem] font-bold uppercase tracking-wider text-bottle-600">
+        <div className="mt-4 rounded-xl border-l-4 border-l-brand-400 bg-surface-200/70 px-3.5 py-3">
+          <p className="text-[0.7rem] font-bold uppercase tracking-wider text-brand-600">
             Reason for visit
           </p>
-          <p className="mt-1 text-[0.95rem] leading-relaxed text-bottle-800">{reason}</p>
+          <p className="mt-1 text-[0.95rem] leading-relaxed text-brand-800">{reason}</p>
         </div>
       )}
 

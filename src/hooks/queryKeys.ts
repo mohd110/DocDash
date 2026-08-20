@@ -10,7 +10,7 @@ export const qk = {
     ['patient-history', id, exclude ?? null] as const,
   consultation: (appointmentId: string) => ['consultation', appointmentId] as const,
   medicines: () => ['known-medicines'] as const,
-  settings: () => ['clinic-settings'] as const,
+  doctor: () => ['doctor-profile'] as const,
 }
 
 /** Everything that must refresh when an appointment changes anywhere. */

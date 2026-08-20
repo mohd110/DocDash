@@ -9,3 +9,6 @@ dist-ssr
 .DS_Store
 *.log
 tsconfig.tsbuildinfo
+
+# Supabase CLI local state (linked project ref, version cache)
+supabase/.temp

@@ -3,7 +3,7 @@ import { Download, FileText, Printer, Send } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useOpenPrescription, useResendPrescription } from '@/hooks/usePrescriptionDelivery'
-import { useClinicSettings } from '@/hooks/useSettings'
+import { useDoctorProfile } from '@/hooks/useDoctor'
 import { formatDate } from '@/lib/date'
 import type { Patient, VisitHistoryEntry } from '@/lib/types'
 
@@ -24,18 +24,18 @@ export function VisitCard({
 }) {
   const resend = useResendPrescription()
   const preview = useOpenPrescription()
-  const { data: settings } = useClinicSettings()
+  const { data: doctor } = useDoctorProfile()
   const when = visit.completed_at ?? visit.appointment?.scheduled_at ?? visit.created_at
 
   return (
     <div
-      className={`rounded-2xl border border-cream-500/40 bg-card shadow-card ${
+      className={`rounded-2xl border border-surface-500/40 bg-card shadow-card ${
         compact ? 'p-4' : 'p-5'
       }`}
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="font-display text-lg font-semibold text-bottle-800">{formatDate(when)}</p>
+          <p className="font-display text-lg font-semibold text-brand-800">{formatDate(when)}</p>
           {visit.appointment?.reason && (
             <p className="mt-0.5 text-sm text-muted-foreground">{visit.appointment.reason}</p>
           )}
@@ -46,7 +46,7 @@ export function VisitCard({
 
       {visit.diagnosis && (
         <div className="mt-4">
-          <p className="text-[0.68rem] font-bold uppercase tracking-wider text-bottle-600">
+          <p className="text-[0.68rem] font-bold uppercase tracking-wider text-brand-600">
             Diagnosis
           </p>
           <p className="mt-1 whitespace-pre-wrap text-sm">{visit.diagnosis}</p>
@@ -57,7 +57,7 @@ export function VisitCard({
         <div className="mt-4 overflow-x-auto">
           <table className="w-full min-w-[30rem] border-separate border-spacing-0 text-left text-sm">
             <thead>
-              <tr className="text-[0.68rem] uppercase tracking-wider text-bottle-600">
+              <tr className="text-[0.68rem] uppercase tracking-wider text-brand-600">
                 <th className="pb-1.5 pr-3 font-bold">Medicine</th>
                 <th className="pb-1.5 pr-3 font-bold">Dosage</th>
                 <th className="pb-1.5 pr-3 font-bold">Frequency</th>
@@ -67,7 +67,7 @@ export function VisitCard({
             </thead>
             <tbody>
               {visit.prescription_items.map((item) => (
-                <tr key={item.id} className="border-t border-cream-500/40">
+                <tr key={item.id} className="border-t border-surface-500/40">
                   <td className="py-1.5 pr-3 font-semibold">{item.medicine_name}</td>
                   <td className="py-1.5 pr-3">{item.dosage || '—'}</td>
                   <td className="py-1.5 pr-3">{item.frequency || '—'}</td>
@@ -82,7 +82,7 @@ export function VisitCard({
 
       {visit.advice && (
         <div className="mt-4">
-          <p className="text-[0.68rem] font-bold uppercase tracking-wider text-bottle-600">Advice</p>
+          <p className="text-[0.68rem] font-bold uppercase tracking-wider text-brand-600">Advice</p>
           <p className="mt-1 whitespace-pre-wrap text-sm">{visit.advice}</p>
         </div>
       )}
@@ -95,7 +95,7 @@ export function VisitCard({
       )}
 
       {visit.appointment && (
-        <div className="mt-5 flex flex-wrap gap-2.5 border-t border-cream-500/40 pt-4">
+        <div className="mt-5 flex flex-wrap gap-2.5 border-t border-surface-500/40 pt-4">
           <Button variant="outline" size="sm" asChild>
             <Link to={`/prescription/${visit.appointment.id}`} target="_blank">
               <Printer />
@@ -111,7 +111,7 @@ export function VisitCard({
               </a>
             </Button>
           ) : (
-            settings && (
+            doctor && (
               <Button
                 variant="outline"
                 size="sm"
@@ -121,7 +121,7 @@ export function VisitCard({
                     patient,
                     appointment: visit.appointment!,
                     consultation: visit,
-                    settings,
+                    doctor,
                   })
                 }
               >

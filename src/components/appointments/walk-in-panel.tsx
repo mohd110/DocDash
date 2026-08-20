@@ -12,9 +12,9 @@ export function WalkInPanel() {
 
   return (
     <>
-      <section className="flex flex-col gap-4 rounded-2xl border border-cream-500/40 bg-card p-5 shadow-card sm:flex-row sm:items-center sm:justify-between">
+      <section className="flex flex-col gap-4 rounded-2xl border border-surface-500/40 bg-card p-5 shadow-card sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h2 className="font-display text-xl font-semibold text-bottle-800">
+          <h2 className="font-display text-xl font-semibold text-brand-800">
             Patient at the desk?
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">

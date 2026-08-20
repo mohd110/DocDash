@@ -22,15 +22,15 @@ function PatientRow({ patient }: { patient: Patient }) {
   const startPrescription = useStartPrescription()
 
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-cream-500/40 bg-card p-4 shadow-card transition-shadow hover:shadow-lift">
+    <div className="flex items-center gap-3 rounded-2xl border border-surface-500/40 bg-card p-4 shadow-card transition-shadow hover:shadow-lift">
       <Link to={`/patients/${patient.id}`} className="flex min-w-0 flex-1 items-center gap-4">
-        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-bottle-100 font-display font-semibold text-bottle-700">
+        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand-100 font-display font-semibold text-brand-700">
           {initials(patient.full_name)}
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="truncate font-display text-lg font-semibold text-bottle-800">
+            <span className="truncate font-display text-lg font-semibold text-brand-800">
               {patient.full_name}
             </span>
             {patient.source === 'whatsapp' && (
@@ -50,7 +50,7 @@ function PatientRow({ patient }: { patient: Patient }) {
           <p className="text-[0.68rem] font-bold uppercase tracking-wider text-muted-foreground">
             Added
           </p>
-          <p className="text-sm font-semibold text-bottle-700">{formatDate(patient.created_at)}</p>
+          <p className="text-sm font-semibold text-brand-700">{formatDate(patient.created_at)}</p>
         </div>
       </Link>
 
@@ -66,7 +66,7 @@ function PatientRow({ patient }: { patient: Patient }) {
       </Button>
 
       <Link to={`/patients/${patient.id}`} aria-label={`Open ${patient.full_name}'s profile`}>
-        <ChevronRight className="size-5 shrink-0 text-bottle-500" />
+        <ChevronRight className="size-5 shrink-0 text-brand-500" />
       </Link>
     </div>
   )
@@ -82,7 +82,7 @@ export function PatientsPage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="font-display text-3xl font-semibold text-bottle-800 sm:text-4xl">
+          <h1 className="font-display text-3xl font-semibold text-brand-800 sm:text-4xl">
             Patients
           </h1>
           <p className="mt-1.5 text-sm text-muted-foreground">

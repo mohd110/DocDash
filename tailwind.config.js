@@ -10,26 +10,29 @@ export default {
     },
     extend: {
       colors: {
-        /* Brand palette — cream paper + bottle green ink */
-        cream: {
-          50: '#FFFDF7',
-          100: '#FDF8EC',
-          200: '#F7EFDA',
-          300: '#EFE3C2',
-          400: '#E4D3A6',
-          500: '#D6BE83',
+        /* Brand palette — every shade resolves to a CSS variable, so the
+           doctor's chosen colours in Settings re-theme the whole app at
+           runtime. Defaults (cream paper + bottle green ink) live in
+           index.css; the ramps are generated in src/lib/theme.ts. */
+        surface: {
+          50: 'hsl(var(--surface-50) / <alpha-value>)',
+          100: 'hsl(var(--surface-100) / <alpha-value>)',
+          200: 'hsl(var(--surface-200) / <alpha-value>)',
+          300: 'hsl(var(--surface-300) / <alpha-value>)',
+          400: 'hsl(var(--surface-400) / <alpha-value>)',
+          500: 'hsl(var(--surface-500) / <alpha-value>)',
         },
-        bottle: {
-          50: '#EFF6F2',
-          100: '#D8E9E0',
-          200: '#AFD3C1',
-          300: '#7DB79C',
-          400: '#4A9377',
-          500: '#166F52',
-          600: '#0B5540',
-          700: '#093F30',
-          800: '#073023',
-          900: '#052319',
+        brand: {
+          50: 'hsl(var(--brand-50) / <alpha-value>)',
+          100: 'hsl(var(--brand-100) / <alpha-value>)',
+          200: 'hsl(var(--brand-200) / <alpha-value>)',
+          300: 'hsl(var(--brand-300) / <alpha-value>)',
+          400: 'hsl(var(--brand-400) / <alpha-value>)',
+          500: 'hsl(var(--brand-500) / <alpha-value>)',
+          600: 'hsl(var(--brand-600) / <alpha-value>)',
+          700: 'hsl(var(--brand-700) / <alpha-value>)',
+          800: 'hsl(var(--brand-800) / <alpha-value>)',
+          900: 'hsl(var(--brand-900) / <alpha-value>)',
         },
 
         /* Semantic tokens (driven by CSS variables in index.css) */
@@ -75,8 +78,10 @@ export default {
         display: ['Montserrat', 'Segoe UI', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        card: '0 1px 2px rgba(9, 63, 48, 0.05), 0 8px 24px -12px rgba(9, 63, 48, 0.18)',
-        lift: '0 4px 12px rgba(9, 63, 48, 0.08), 0 16px 40px -16px rgba(9, 63, 48, 0.28)',
+        /* Tinted by the brand colour, so a plum dashboard does not cast
+           green shadows. */
+        card: '0 1px 2px hsl(var(--shadow-color) / 0.05), 0 8px 24px -12px hsl(var(--shadow-color) / 0.18)',
+        lift: '0 4px 12px hsl(var(--shadow-color) / 0.08), 0 16px 40px -16px hsl(var(--shadow-color) / 0.28)',
       },
       keyframes: {
         'accordion-down': {

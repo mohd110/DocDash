@@ -3,27 +3,27 @@ import { Download, FileText, Pill, Printer, Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'
 import { useOpenPrescription, useResendPrescription } from '@/hooks/usePrescriptionDelivery'
-import { useClinicSettings } from '@/hooks/useSettings'
+import { useDoctorProfile } from '@/hooks/useDoctor'
 import { formatDate } from '@/lib/date'
 import type { Patient, VisitHistoryEntry } from '@/lib/types'
 
 function Row({ visit, patient }: { visit: VisitHistoryEntry; patient: Patient }) {
   const resend = useResendPrescription()
   const preview = useOpenPrescription()
-  const { data: settings } = useClinicSettings()
+  const { data: doctor } = useDoctorProfile()
   const when = visit.completed_at ?? visit.appointment?.scheduled_at ?? visit.created_at
   const meds = visit.prescription_items
 
   return (
-    <div className="rounded-xl border border-cream-500/50 bg-cream-100/60 p-4">
+    <div className="rounded-xl border border-surface-500/50 bg-surface-100/60 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="font-display text-base font-semibold text-bottle-800">{formatDate(when)}</p>
+          <p className="font-display text-base font-semibold text-brand-800">{formatDate(when)}</p>
           <p className="mt-0.5 line-clamp-1 text-sm text-muted-foreground">
             {visit.diagnosis || visit.appointment?.reason || 'No diagnosis recorded'}
           </p>
         </div>
-        <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-cream-200 px-3 py-1 text-xs font-bold text-bottle-700">
+        <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-surface-200 px-3 py-1 text-xs font-bold text-brand-700">
           <Pill className="size-3.5" />
           {meds.length} {meds.length === 1 ? 'medicine' : 'medicines'}
         </span>
@@ -65,7 +65,7 @@ function Row({ visit, patient }: { visit: VisitHistoryEntry; patient: Patient })
               </a>
             </Button>
           ) : (
-            settings && (
+            doctor && (
               <Button
                 variant="outline"
                 size="sm"
@@ -75,7 +75,7 @@ function Row({ visit, patient }: { visit: VisitHistoryEntry; patient: Patient })
                     patient,
                     appointment: visit.appointment!,
                     consultation: visit,
-                    settings,
+                    doctor,
                   })
                 }
               >

@@ -10,14 +10,14 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          'bg-bottle-600 text-cream-100 shadow-card hover:bg-bottle-700 hover:shadow-lift',
+          'bg-brand-600 text-surface-100 shadow-card hover:bg-brand-700 hover:shadow-lift',
         secondary:
-          'bg-cream-200 text-bottle-800 border border-cream-500/50 hover:bg-cream-300',
+          'bg-surface-200 text-brand-800 border border-surface-500/50 hover:bg-surface-300',
         outline:
-          'border-2 border-bottle-600/25 bg-card text-bottle-800 hover:border-bottle-600/60 hover:bg-bottle-50',
-        ghost: 'text-bottle-800 hover:bg-bottle-50',
+          'border-2 border-brand-600/25 bg-card text-brand-800 hover:border-brand-600/60 hover:bg-brand-50',
+        ghost: 'text-brand-800 hover:bg-brand-50',
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-        link: 'text-bottle-600 underline-offset-4 hover:underline',
+        link: 'text-brand-600 underline-offset-4 hover:underline',
       },
       size: {
         // Large touch targets throughout — the doctor may be on a tablet (§7)

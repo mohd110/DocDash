@@ -15,15 +15,15 @@ export function StatCard({
   hint?: string
 }) {
   const tones = {
-    cream: 'bg-card border-cream-500/40 text-bottle-800',
-    green: 'bg-bottle-600 border-bottle-700 text-cream-100',
+    cream: 'bg-card border-surface-500/40 text-brand-800',
+    green: 'bg-brand-600 border-brand-700 text-surface-100',
     blue: 'bg-blue-50 border-blue-200 text-blue-900',
     amber: 'bg-amber-50 border-amber-200 text-amber-900',
   } as const
 
   const iconTones = {
-    cream: 'bg-cream-200 text-bottle-700',
-    green: 'bg-cream-100/20 text-cream-100',
+    cream: 'bg-surface-200 text-brand-700',
+    green: 'bg-surface-100/20 text-surface-100',
     blue: 'bg-blue-100 text-blue-700',
     amber: 'bg-amber-100 text-amber-700',
   } as const
